@@ -494,8 +494,8 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
       ->setDefaultValue(0)
       ->setRequired(TRUE)
       ->setSettings([
-        'on_label' => t('Hide for the listed pages'),
-        'off_label' => t('Show for the listed pages'),
+        'on_label' => t('Show for the listed pages'),
+        'off_label' => t('Hide for the listed pages'),
       ])
       ->setDisplayOptions('form', [
         'type' => 'options_buttons',
@@ -606,8 +606,7 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
     $path_alias = mb_strtolower($alias_manager->getAliasByPath($path));
 
     $matches = $path_matcher->matchPath($path_alias, $pages) || (($path != $path_alias) && $path_matcher->matchPath($path, $pages));
-
-    return $visibility && $matches || !$visibility && !$matches;
+    return $matches ? $visibility : !$visibility;
   }
 
 }
