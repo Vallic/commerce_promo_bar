@@ -1,0 +1,73 @@
+<?php
+
+/**
+ * @file
+ * Provides a commerce promo bar entity type.
+ */
+
+use Drupal\commerce_promo_bar\Entity\PromoBarInterface;
+use Drupal\Core\Render\Element;
+
+/**
+ * Implements hook_theme().
+ */
+function commerce_promo_bar_theme() {
+  return [
+    'commerce_promo_bar' => [
+      'render element' => 'elements',
+    ],
+    'commerce_promo_bar_block' => [
+      'variables' => [
+        'promo_bars' => [],
+      ],
+      'template' => 'commerce-promo-bar-block',
+    ],
+    'commerce_promo_bar_form' => [
+      'render element' => 'form',
+    ],
+  ];
+}
+
+/**
+ * Prepares variables for commerce promo bar templates.
+ *
+ * Default template: commerce-promo_bar.html.twig.
+ *
+ * @param array $variables
+ *   An associative array containing:
+ *   - elements: An associative array containing the commerce promo bar information and any
+ *     fields attached to the entity.
+ *   - attributes: HTML attributes for the containing element.
+ */
+function template_preprocess_commerce_promo_bar(array &$variables) {
+  $variables['view_mode'] = $variables['elements']['#view_mode'];
+  /** @var PromoBarInterface $commerce_promo_bar */
+  $commerce_promo_bar = $variables['elements']['#commerce_promo_bar'];
+  $variables['promo_bar_entity'] = $commerce_promo_bar;
+  $variables['promo_bar'] = [];
+  foreach (Element::children($variables['elements']) as $key) {
+    $variables['promo_bar'][$key] = $variables['elements'][$key];
+  }
+}
+
+/**
+ * Implement template_preprocess_field().
+ */
+function commerce_promo_bar_preprocess_field(&$variables, $hook) {
+  $element = $variables['element'];
+
+  // Replacing tokens from body with real values.
+  if (isset($element['#entity_type'], $element['#field_name'], $element['#object'])) {
+    if ($element['#entity_type'] === 'commerce_promo_bar' && $element['#field_name'] === 'body' && $element['#object'] instanceof PromoBarInterface) {
+      $token_service = \Drupal::token();
+
+      $delta = 0;
+      while (!empty($element[$delta])) {
+        $variables['items'][$delta]['content']['#text'] = $token_service->replace($variables['items'][$delta]['content']['#text'], [
+          'commerce_promo_bar' => $element['#object']
+        ]);
+        $delta++;
+      }
+    }
+  }
+}

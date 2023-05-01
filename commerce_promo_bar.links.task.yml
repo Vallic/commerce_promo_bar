@@ -1,0 +1,20 @@
+entity.commerce_promo_bar.settings:
+  title: 'Settings'
+  route_name: entity.commerce_promo_bar.settings
+  base_route: entity.commerce_promo_bar.settings
+entity.commerce_promo_bar.edit_form:
+  title: 'Edit'
+  route_name: entity.commerce_promo_bar.edit_form
+  base_route: entity.commerce_promo_bar.canonical
+entity.commerce_promo_bar.delete_form:
+  title: 'Delete'
+  route_name: entity.commerce_promo_bar.delete_form
+  base_route: entity.commerce_promo_bar.canonical
+entity.commerce_promo_bar.collection:
+  title: 'Promo bars'
+  route_name: entity.commerce_promo_bar.collection
+  base_route: entity.commerce_promo_bar.collection
+entity.commerce_promo_bar.reorder_form:
+  route_name: entity.commerce_promo_bar.reorder
+  base_route: entity.commerce_promo_bar.collection
+  title: 'Reorder'

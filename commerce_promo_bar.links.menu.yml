@@ -1,0 +1,5 @@
+entity.commerce_promo_bar.collection:
+  title: 'Promo bars'
+  description: 'Manage your promo bars.'
+  route_name: entity.commerce_promo_bar.collection
+  parent: commerce.admin_commerce

@@ -1,0 +1,11 @@
+name: Commerce Promo Bar
+type: module
+description: 'Provides a UI for managing promo bars.'
+package: Commerce
+core_version_requirement: ^9.4 || ^10
+configure: entity.commerce_promo_bar.settings
+dependencies:
+  - commerce:commerce_promotion
+  - drupal:options
+  - color_field:color_field
+

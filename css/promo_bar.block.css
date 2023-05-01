@@ -1,0 +1,10 @@
+/**
+ * @file
+ * Styles for the promo_bar.
+ */
+
+.commerce-promo-bar article {
+  padding: 5px;
+  text-align: center;
+  margin: 0 auto;
+}

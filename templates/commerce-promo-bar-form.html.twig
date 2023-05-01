@@ -1,0 +1,22 @@
+{#
+/**
+ * @file
+ * Template for the promo_bar add/edit form.
+ *
+ * Available variables:
+ * - form: The form.
+ *
+ * @ingroup themeable
+ */
+#}
+<div class="layout-promo_bar-form clearfix">
+  <div class="layout-region layout-region-promo_bar-main">
+    {{ form|without('advanced', 'actions') }}
+  </div>
+  <div class="layout-region layout-region-promo_bar-secondary">
+    {{ form.advanced }}
+  </div>
+  <div class="layout-region layout-region-promo_bar-footer">
+    {{ form.actions }}
+  </div>
+</div>

@@ -1,0 +1,16 @@
+form:
+  version: VERSION
+  css:
+    theme:
+      css/promo_bar.form.css: {}
+
+block:
+  version: VERSION
+  css:
+    theme:
+      css/promo_bar.block.css: {}
+
+countdown:
+  version: VERSION
+  js:
+    js/promo_bar.countdown.js: {}

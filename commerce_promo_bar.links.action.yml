@@ -1,0 +1,6 @@
+commerce_promo_bar.add_form:
+  title: 'Add promo bar'
+  route_name: entity.commerce_promo_bar.add_form
+  appears_on:
+    - entity.commerce_promo_bar.collection
+    - entity.commerce_promo_bar.reorder

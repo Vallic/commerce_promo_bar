@@ -1,0 +1,7 @@
+entity.commerce_promo_bar.settings:
+  path: 'admin/commerce/config/promo_bar'
+  defaults:
+    _form: '\Drupal\commerce_promo_bar\Form\PromoBarSettingsForm'
+    _title: 'Promo Bar'
+  requirements:
+    _permission: 'administer commerce promo bar'

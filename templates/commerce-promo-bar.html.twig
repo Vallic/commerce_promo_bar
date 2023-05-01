@@ -1,0 +1,37 @@
+{#
+/**
+ * @file
+ *
+ * Default promo_bar template.
+ *
+ * Available variables:
+ * - attributes: HTML attributes for the wrapper.
+ * - promo_bar: The rendered promo bar fields.
+ *   Use 'promo_bar' to print them all, or print a subset such as
+ *   'promo_bar.title'. Use the following code to exclude the
+ *   printing of a given field:
+ *   @code
+ *   {{ promo_bar|without('title') }}
+ *   @endcode
+ * - promo_bar_entity: The promo bar entity.
+ * - title_prefix: Additional output populated by modules, intended to be
+ *   displayed in front of the main title tag that appears in the template.
+ * - title_suffix: Additional output populated by modules, intended to be
+ *   displayed after the main title tag that appears in the template.
+ *
+ * @ingroup themeable
+ */
+#}
+{% set css_class = "promo-bar-wrapper-%s"|format(promo_bar_entity.id.value) %}
+{% set countdown_class = "promo-bar-countdown-%s"|format(promo_bar_entity.id.value) %}
+{% if promo_bar %}
+  <div class="commerce-promo-bar">
+    <article{{ attributes.addClass(css_class)}}>
+      {{- promo_bar.body -}}
+      <div class="promo-bar-countdown {{ countdown_class }}"></div>
+      {{- promo_bar.background_color -}}
+      {{- promo_bar.text_color -}}
+    </article>
+  </div>
+{% endif %}
+

@@ -1,0 +1,16 @@
+{
+    "name": "drupal/commerce_promo_bar",
+    "type": "drupal-module",
+    "description": "Provides a UI for managing promo bars.",
+    "homepage": "https://www.drupal.org/project/commerce_promo_bar",
+    "license": "GPL-2.0-or-later",
+    "require": {
+        "drupal/commerce": "~2.3",
+        "drupal/color_field": "~3.0"
+    }
+,
+    "require-dev": {
+        "roave/security-advisories": "dev-master"
+    },
+    "minimum-stability": "dev"
+}
