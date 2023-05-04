@@ -3,3 +3,10 @@ entity.commerce_promo_bar.collection:
   description: 'Manage your promo bars.'
   route_name: entity.commerce_promo_bar.collection
   parent: commerce.admin_commerce
+
+entity.commerce_promo_bar.settings:
+  title: 'Promo bar settings'
+  route_name: 'entity.commerce_promo_bar.settings'
+  parent: 'commerce.store_configuration'
+  description: 'Manage fields, form and display settings for your promo bars.'
+  weight: 20
