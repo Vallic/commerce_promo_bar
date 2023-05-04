@@ -13,6 +13,44 @@ use Drupal\user\EntityOwnerInterface;
 interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface, EntityChangedInterface {
 
   /**
+   * Gets the promo bar name.
+   *
+   * This name is admin-facing.
+   *
+   * @return string
+   *   The promo bar name.
+   */
+  public function getName();
+
+  /**
+   * Sets the promo bar name.
+   *
+   * @param string $name
+   *   The promo bar name.
+   *
+   * @return $this
+   */
+  public function setName($name);
+
+  /**
+   * Gets the promo bar description.
+   *
+   * @return string
+   *   The promo bar description.
+   */
+  public function getDescription();
+
+  /**
+   * Sets the promo bar description.
+   *
+   * @param string $description
+   *   The promo bar description.
+   *
+   * @return $this
+   */
+  public function setDescription($description);
+
+  /**
    * The path or routes for visibility logic.
    *
    * @return string

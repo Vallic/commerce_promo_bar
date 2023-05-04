@@ -9,7 +9,7 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
-use Drupal\user\EntityOwnerTrait;
+use Drupal\commerce\EntityOwnerTrait;
 
 /**
  * Defines the promo bar entity class.
@@ -101,6 +101,21 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
   /**
    * {@inheritdoc}
    */
+  public function getName() {
+    return $this->get('label')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setName($name) {
+    $this->set('label', $name);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function getPages() {
     return $this->get('pages')->value;
   }
@@ -110,6 +125,14 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
    */
   public function getDescription() {
     return $this->get('body')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setDescription($description) {
+    $this->set('body', $description);
+    return $this;
   }
 
   /**
@@ -299,6 +322,7 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
    */
   public static function baseFieldDefinitions(EntityTypeInterface $entity_type) {
     $fields = parent::baseFieldDefinitions($entity_type);
+    $fields += static::ownerBaseFieldDefinitions($entity_type);
 
     $fields['label'] = BaseFieldDefinition::create('string')
       ->setTranslatable(TRUE)
@@ -503,10 +527,8 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
       ]);
 
     $fields['uid'] = BaseFieldDefinition::create('entity_reference')
-      ->setTranslatable(TRUE)
       ->setLabel(t('Author'))
-      ->setSetting('target_type', 'user')
-      ->setDefaultValueCallback(static::class . '::getDefaultEntityOwner');
+      ->setSetting('target_type', 'user');
 
     $fields['weight'] = BaseFieldDefinition::create('integer')
       ->setLabel(t('Weight'))
