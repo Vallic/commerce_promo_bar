@@ -3,6 +3,7 @@
 namespace Drupal\commerce_promo_bar\Entity;
 
 use Drupal\commerce\Entity\CommerceContentEntityBase;
+use Drupal\commerce_promotion\Entity\PromotionInterface;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -101,14 +102,14 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
   /**
    * {@inheritdoc}
    */
-  public function getName() {
+  public function getName(): string {
     return $this->get('label')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setName($name) {
+  public function setName(string $name): static {
     $this->set('label', $name);
     return $this;
   }
@@ -116,21 +117,21 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
   /**
    * {@inheritdoc}
    */
-  public function getPages() {
+  public function getPages(): ?string {
     return $this->get('pages')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getDescription() {
+  public function getDescription(): string {
     return $this->get('body')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setDescription($description) {
+  public function setDescription(string $description): static {
     $this->set('body', $description);
     return $this;
   }
@@ -138,14 +139,14 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
   /**
    * {@inheritdoc}
    */
-  public function getStores() {
+  public function getStores(): array {
     return $this->getTranslatedReferencedEntities('stores');
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setStores(array $stores) {
+  public function setStores(array $stores): static {
     $this->set('stores', $stores);
     return $this;
   }
@@ -153,7 +154,7 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
   /**
    * {@inheritdoc}
    */
-  public function getStoreIds() {
+  public function getStoreIds(): array {
     $store_ids = [];
     foreach ($this->get('stores') as $field_item) {
       $store_ids[] = $field_item->target_id;
@@ -164,7 +165,7 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
   /**
    * {@inheritdoc}
    */
-  public function setStoreIds(array $store_ids) {
+  public function setStoreIds(array $store_ids): static {
     $this->set('stores', $store_ids);
     return $this;
   }
@@ -189,14 +190,14 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
   /**
    * {@inheritdoc}
    */
-  public function getStartDate($store_timezone = 'UTC') {
+  public function getStartDate(string $store_timezone = 'UTC'): DrupalDateTime {
     return new DrupalDateTime($this->get('start_date')->value, $store_timezone);
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setStartDate(DrupalDateTime $start_date) {
+  public function setStartDate(DrupalDateTime $start_date): static {
     $this->get('start_date')->value = $start_date->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
     return $this;
   }
@@ -204,67 +205,72 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
   /**
    * {@inheritdoc}
    */
-  public function getEndDate($store_timezone = 'UTC') {
+  public function getEndDate(string $store_timezone = 'UTC'): ?DrupalDateTime {
     if (!$this->get('end_date')->isEmpty()) {
       return new DrupalDateTime($this->get('end_date')->value, $store_timezone);
     }
+
+    return NULL;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setEndDate(DrupalDateTime $end_date = NULL) {
+  public function setEndDate(DrupalDateTime $end_date = NULL): static {
     $this->get('end_date')->value = NULL;
     if ($end_date) {
       $this->get('end_date')->value = $end_date->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
     }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function getCountdownDate($store_timezone = 'UTC') {
-    if (!$this->get('countdown_date')->isEmpty()) {
-      return new DrupalDateTime($this->get('countdown_date')->value, $store_timezone);
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setCountdownDate(DrupalDateTime $end_date = NULL) {
-    $this->get('countdown_date')->value = NULL;
-    if ($end_date) {
-      $this->get('countdown_date')->value = $end_date->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
-    }
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function isEnabled() {
-    return (bool) $this->getEntityKey('status');
-  }
-
-  /**
-   * {@inheritdoc}
-   */
-  public function setEnabled($enabled) {
-    $this->set('status', (bool) $enabled);
     return $this;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getWeight() {
+  public function getCountdownDate(string $store_timezone = 'UTC'): ?DrupalDateTime {
+    if (!$this->get('countdown_date')->isEmpty()) {
+      return new DrupalDateTime($this->get('countdown_date')->value, $store_timezone);
+    }
+    return NULL;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setCountdownDate(DrupalDateTime $end_date = NULL): static {
+    $this->get('countdown_date')->value = NULL;
+    if ($end_date) {
+      $this->get('countdown_date')->value = $end_date->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
+    }
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isEnabled(): bool {
+    return (bool) $this->getEntityKey('status');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setEnabled(bool $enabled): static {
+    $this->set('status', $enabled);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function getWeight(): int {
     return (int) $this->get('weight')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setWeight($weight) {
+  public function setWeight(int $weight): static {
     $this->set('weight', $weight);
     return $this;
   }
@@ -272,14 +278,14 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
   /**
    * {@inheritdoc}
    */
-  public function getCreatedTime() {
+  public function getCreatedTime(): int {
     return $this->get('created')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setCreatedTime($timestamp) {
+  public function setCreatedTime(int $timestamp): static {
     $this->set('created', $timestamp);
     return $this;
   }
@@ -287,21 +293,21 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
   /**
    * {@inheritdoc}
    */
-  public function getPromotion() {
+  public function getPromotion(): ?PromotionInterface {
     return $this->getTranslatedReferencedEntity('promotion_id');
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getPromotionId() {
+  public function getPromotionId(): ?int {
     return $this->get('promotion_id')->target_id;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function getCustomerRoles() {
+  public function getCustomerRoles(): ?array {
     $roles = [];
     foreach ($this->get('customer_roles') as $field_item) {
       $roles[] = $field_item->target_id;
@@ -312,9 +318,16 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
   /**
    * {@inheritdoc}
    */
-  public function setCustomerRoles(array $rids) {
+  public function setCustomerRoles(array $rids): static {
     $this->set('customer_roles', $rids);
     return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isDismissible(): bool {
+    return (bool) $this->get('dismissible')->value;
   }
 
   /**
@@ -526,6 +539,21 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
         'weight' => 26,
       ]);
 
+    $fields['dismissible'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Dismissible'))
+      ->setDescription(t('Visitors will be able to dismiss the promo bar. This is per session.'))
+      ->setRequired(FALSE)
+      ->setDisplayOptions('form', [
+        'type' => 'boolean_checkbox',
+        'weight' => 30,
+      ])
+      ->setDisplayOptions('view', [
+        'region' => 'hidden',
+      ])
+      ->setDisplayConfigurable('form', FALSE)
+      ->setDisplayConfigurable('view', FALSE);
+
+
     $fields['uid'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Author'))
       ->setSetting('target_type', 'user');
@@ -568,7 +596,7 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
    * @return string
    *   The default value (date string).
    */
-  public static function getDefaultStartDate() {
+  public static function getDefaultStartDate(): string {
     $timestamp = \Drupal::time()->getRequestTime();
     return date(DateTimeItemInterface::DATETIME_STORAGE_FORMAT, $timestamp);
   }
@@ -584,7 +612,7 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
    * @return int
    *   The comparison result for uasort().
    */
-  public static function sort(PromoBarInterface $a, PromoBarInterface $b) {
+  public static function sort(PromoBarInterface $a, PromoBarInterface $b): int {
     $a_weight = $a->getWeight();
     $b_weight = $b->getWeight();
     if ($a_weight == $b_weight) {
@@ -604,7 +632,7 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
    * @return bool
    *   True or false.
    */
-  public static function evaluateVisibility(PromoBarInterface $promo_bar) {
+  public static function evaluateVisibility(PromoBarInterface $promo_bar): bool {
     if (empty($promo_bar->getPages())) {
       return TRUE;
     }

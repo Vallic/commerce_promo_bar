@@ -68,6 +68,7 @@ class PromoBarForm extends ContentEntityForm {
       'status' => 'option_details',
       'weight' => 'option_details',
       'stores' => 'option_details',
+      'dismissible' => 'option_details',
       'start_date' => 'date_details',
       'end_date' => 'date_details',
       'countdown_date' => 'date_details',

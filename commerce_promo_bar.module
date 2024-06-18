@@ -48,6 +48,7 @@ function template_preprocess_commerce_promo_bar(array &$variables) {
   foreach (Element::children($variables['elements']) as $key) {
     $variables['promo_bar'][$key] = $variables['elements'][$key];
   }
+  $variables['promo_bar']['dismissible'] = $commerce_promo_bar->isDismissible();
 }
 
 /**

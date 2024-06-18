@@ -2,6 +2,7 @@
 
 namespace Drupal\commerce_promo_bar\Entity;
 
+use Drupal\commerce_promotion\Entity\PromotionInterface;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
@@ -20,7 +21,7 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    * @return string
    *   The promo bar name.
    */
-  public function getName();
+  public function getName(): string;
 
   /**
    * Sets the promo bar name.
@@ -30,7 +31,7 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    *
    * @return $this
    */
-  public function setName($name);
+  public function setName(string $name): static;
 
   /**
    * Gets the promo bar description.
@@ -38,7 +39,7 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    * @return string
    *   The promo bar description.
    */
-  public function getDescription();
+  public function getDescription(): string;
 
   /**
    * Sets the promo bar description.
@@ -48,15 +49,15 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    *
    * @return $this
    */
-  public function setDescription($description);
+  public function setDescription(string $description): static;
 
   /**
    * The path or routes for visibility logic.
    *
-   * @return string
+   * @return string|null
    *   All paths added.
    */
-  public function getPages();
+  public function getPages(): ?string;
 
   /**
    * Gets the promo bar start date/time.
@@ -75,7 +76,7 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    * @return \Drupal\Core\Datetime\DrupalDateTime
    *   The promo bar start date/time.
    */
-  public function getStartDate($store_timezone = 'UTC');
+  public function getStartDate(string $store_timezone = 'UTC'): DrupalDateTime;
 
   /**
    * Sets the promo bar start date/time.
@@ -85,7 +86,7 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    *
    * @return $this
    */
-  public function setStartDate(DrupalDateTime $start_date);
+  public function setStartDate(DrupalDateTime $start_date): static;
 
   /**
    * Gets the promo bar end date/time.
@@ -104,17 +105,17 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    * @return \Drupal\Core\Datetime\DrupalDateTime
    *   The promo bar end date/time.
    */
-  public function getEndDate($store_timezone = 'UTC');
+  public function getEndDate(string $store_timezone = 'UTC'): ?DrupalDateTime;
 
   /**
    * Sets the promo bar end date/time.
    *
-   * @param \Drupal\Core\Datetime\DrupalDateTime $end_date
+   * @param \Drupal\Core\Datetime\DrupalDateTime|null $end_date
    *   The promo bar end date/time.
    *
    * @return $this
    */
-  public function setEndDate(DrupalDateTime $end_date = NULL);
+  public function setEndDate(DrupalDateTime $end_date = NULL): static;
 
   /**
    * Gets the promo bar countdown date/time.
@@ -125,17 +126,17 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    * @return \Drupal\Core\Datetime\DrupalDateTime
    *   The promo bar countdown date/time.
    */
-  public function getCountdownDate($store_timezone = 'UTC');
+  public function getCountdownDate(string $store_timezone = 'UTC'): ?DrupalDateTime;
 
   /**
    * Sets the promo bar countdown date/time.
    *
-   * @param \Drupal\Core\Datetime\DrupalDateTime $end_date
+   * @param \Drupal\Core\Datetime\DrupalDateTime|null $end_date
    *   The promo bar countdown date/time.
    *
    * @return $this
    */
-  public function setCountdownDate(DrupalDateTime $end_date = NULL);
+  public function setCountdownDate(DrupalDateTime $end_date = NULL): static;
 
   /**
    * Get whether the promo bar is enabled.
@@ -143,7 +144,7 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    * @return bool
    *   TRUE if the promo bar is enabled, FALSE otherwise.
    */
-  public function isEnabled();
+  public function isEnabled(): bool;
 
   /**
    * Sets whether the promo bar is enabled.
@@ -153,7 +154,7 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    *
    * @return $this
    */
-  public function setEnabled($enabled);
+  public function setEnabled(bool $enabled): static;
 
   /**
    * Gets the weight.
@@ -161,7 +162,7 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    * @return int
    *   The weight.
    */
-  public function getWeight();
+  public function getWeight(): int;
 
   /**
    * Sets the weight.
@@ -171,7 +172,7 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    *
    * @return $this
    */
-  public function setWeight($weight);
+  public function setWeight(int $weight): static;
 
   /**
    * Gets the promo bar creation timestamp.
@@ -179,7 +180,7 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    * @return int
    *   Creation timestamp of the promo bar.
    */
-  public function getCreatedTime();
+  public function getCreatedTime(): int;
 
   /**
    * Sets the promo bar creation timestamp.
@@ -189,7 +190,7 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    *
    * @return $this
    */
-  public function setCreatedTime($timestamp);
+  public function setCreatedTime(int $timestamp): static;
 
   /**
    * Gets the related promotion.
@@ -197,7 +198,7 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    * @return \Drupal\commerce_promotion\Entity\PromotionInterface|null
    *   The promotion entity, or null.
    */
-  public function getPromotion();
+  public function getPromotion(): ?PromotionInterface;
 
   /**
    * Gets the related promotion ID.
@@ -205,7 +206,7 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    * @return int|null
    *   The promotion ID, or null.
    */
-  public function getPromotionId();
+  public function getPromotionId(): ?int;
 
   /**
    * Gets the customer roles.
@@ -214,7 +215,7 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    *   The customer role IDs, or NULL if the promo bar is not limited to
    *   specific customer roles.
    */
-  public function getCustomerRoles();
+  public function getCustomerRoles(): ?array;
 
   /**
    * Sets the customer roles.
@@ -224,6 +225,12 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    *
    * @return $this
    */
-  public function setCustomerRoles(array $rids);
+  public function setCustomerRoles(array $rids): static;
+
+  /**
+   * Determine if promo bar can be dismissed.
+   */
+  public function isDismissible(): bool;
+
 
 }

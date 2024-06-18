@@ -3,10 +3,12 @@
 namespace Drupal\commerce_promo_bar\Plugin\Block;
 
 use Drupal\commerce_promo_bar\Entity\PromoBar;
+use Drupal\commerce_promo_bar\PromoBarStorageInterface;
 use Drupal\commerce_store\CurrentStoreInterface;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -25,31 +27,23 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
 
   /**
    * The entity type manager.
-   *
-   * @var \Drupal\Core\Entity\EntityTypeManagerInterface
    */
-  protected $entityTypeManager;
+  protected EntityTypeManagerInterface $entityTypeManager;
 
   /**
    * The current store.
-   *
-   * @var \Drupal\commerce_store\CurrentStoreInterface
    */
-  protected $currentStore;
+  protected CurrentStoreInterface $currentStore;
 
   /**
    * The current user.
-   *
-   * @var \Drupal\Core\Session\AccountProxyInterface
    */
-  protected $currentUser;
+  protected AccountProxyInterface $currentUser;
 
   /**
    * The promo_bar storage.
-   *
-   * @var \Drupal\commerce_promo_bar\PromoBarStorageInterface
    */
-  protected $promoBarStorage;
+  protected PromoBarStorageInterface|EntityStorageInterface $promoBarStorage;
 
   /**
    * Construct.
@@ -67,12 +61,7 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
    * @param \Drupal\Core\Session\AccountProxyInterface $current_user
    *   The current user.
    */
-  public function __construct(array $configuration,
-  $plugin_id,
-  $plugin_definition,
-    EntityTypeManagerInterface $entity_type_manager,
-  CurrentStoreInterface $current_store,
-  AccountProxyInterface $current_user) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, CurrentStoreInterface $current_store, AccountProxyInterface $current_user) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
     $this->currentStore = $current_store;
@@ -144,8 +133,9 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
       if (PromoBar::evaluateVisibility($promo_bar)) {
         $visible_promo_bars[] = $this->entityTypeManager->getViewBuilder('commerce_promo_bar')->view($promo_bar);
         if ($promo_bar->getCountdownDate() && $promo_bar->getCountdownDate($timezone)->getTimestamp() > $date->getTimestamp()) {
-          $js_settings[$promo_bar->id()] = $promo_bar->getCountdownDate($timezone)->format('c');
+          $js_settings[$promo_bar->id()]['countdown'] = $promo_bar->getCountdownDate($timezone)->format('c');
         }
+        $js_settings[$promo_bar->id()]['dismissible'] = $promo_bar->isDismissible();
       }
     }
 
@@ -166,9 +156,7 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
           'commerce_promo_bar/block',
         ],
         'drupalSettings' => [
-          'commercePromoBar' => [
-            'countdown' => $js_settings,
-          ],
+          'commercePromoBar' => $js_settings,
         ],
       ],
     ];

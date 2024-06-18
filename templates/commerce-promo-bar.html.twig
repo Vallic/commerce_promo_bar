@@ -22,16 +22,18 @@
  * @ingroup themeable
  */
 #}
+{% set css_id = "promo-bar-%s"|format(promo_bar_entity.id.value) %}
 {% set css_class = "promo-bar-wrapper-%s"|format(promo_bar_entity.id.value) %}
 {% set countdown_class = "promo-bar-countdown-%s"|format(promo_bar_entity.id.value) %}
-{% if promo_bar %}
-  <div class="commerce-promo-bar">
-    <article{{ attributes.addClass(css_class)}}>
-      {{- promo_bar.body -}}
-      <div class="promo-bar-countdown {{ countdown_class }}"></div>
-      {{- promo_bar.background_color -}}
-      {{- promo_bar.text_color -}}
-    </article>
-  </div>
-{% endif %}
+<div id="{{ css_id }}" class="commerce-promo-bar">
+  <article{{ attributes.addClass(css_class)}}>
+    {{- promo_bar.body -}}
+    <div class="promo-bar-countdown {{ countdown_class }}"></div>
+    {{- promo_bar.background_color -}}
+    {{- promo_bar.text_color -}}
+  </article>
+  {% if promo_bar.dismissible %}
+  <span class="dismiss">{{ 'Dismiss'|t }}</span>
+  {% endif %}
+</div>
 
