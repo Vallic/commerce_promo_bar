@@ -8,14 +8,14 @@
 }
 
 .commerce-promo-bar article {
+  margin: 0 auto;
   padding: 5px;
   text-align: center;
-  margin: 0 auto;
 }
 
 .commerce-promo-bar span.dismiss {
   position: absolute;
-  right: 10px;
   top: 10px;
+  right: 10px;
   cursor: pointer;
 }

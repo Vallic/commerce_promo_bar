@@ -2,20 +2,16 @@
  * @file
  * Javascript to attach countdown on the promo bar.
  */
-
 (function (Drupal, drupalSettings, once) {
-
-  'use strict';
-
   /**
    * Returns list of dismissible id's.
    *
    * @returns {[]}
    */
-  const getDismissedAlerts = () => {
-    let saved =  window.localStorage.getItem('commerce_promo_bar');
+  const getDismissedPromoBars = () => {
+    const saved = window.localStorage.getItem('commerce_promo_bar');
     if (saved !== null) {
-      return  JSON.parse(saved);
+      return JSON.parse(saved);
     }
 
     return [];
@@ -26,30 +22,39 @@
    *
    * @param id
    */
-  const setDismissedAlert = (id) => {
-    let alerts = getDismissedAlerts();
+  const setDismissedPromoBar = (id) => {
+    const promoBars = getDismissedPromoBars();
 
-    if (alerts.includes(id) === false) {
-      alerts.push(id);
+    if (promoBars.includes(id) === false) {
+      promoBars.push(id);
       window.localStorage.setItem(
         'commerce_promo_bar',
-        JSON.stringify(alerts)
+        JSON.stringify(promoBars),
       );
     }
   };
 
-  const dismissAlert= (id) => {
-    setDismissedAlert(id);
-    removeAlert(id);
-  };
-
-  const removeAlert = (id) => {
-    let markup = document.querySelector('#promo-bar-' + id);
+  /**
+   * Remove promo bar markup.
+   *
+   * @param id
+   */
+  const removePromoBar = (id) => {
+    const markup = document.querySelector(`#promo-bar-${id}`);
     if (markup) {
       markup.remove();
     }
   };
 
+  /**
+   * Dismiss promo bar by id.
+   *
+   * @param id
+   */
+  const dismissPromoBar = (id) => {
+    setDismissedPromoBar(id);
+    removePromoBar(id);
+  };
 
   /**
    * Attaches the commercePromoBar behavior.
@@ -57,65 +62,93 @@
    * @type {Drupal~behavior}
    */
   Drupal.behaviors.commercePromoBar = {
-    attach: function (context) {
+    attach: function attach(context) {
       // Check if we have variable or that counter is active.
       if (!drupalSettings.commercePromoBar) {
         return;
       }
 
-
       // Fetch already dismissed items.
-      const dismissedAlerts = getDismissedAlerts();
-      const promobars = drupalSettings.commercePromoBar;
+      const dismissedPromoBars = getDismissedPromoBars();
+      const promoBars = drupalSettings.commercePromoBar;
 
-      for (const id in promobars) {
-
-        let countdown = promobars[id].countdown;
-
-        // Set countdown if applicable.
-        if (countdown !== undefined) {
-          let countdown_selector = document.querySelector('.promo-bar-countdown-' + id);
-          let deadline = new Date(countdown);
-
-          const start_timer = setInterval(function () {
-            const remaining_time = deadline.getTime() - Date.now();
-            let remaining_days = Math.floor(remaining_time / (1000 * 60 * 60 * 24));
-            let remaining_hours = Math.floor((remaining_time % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
-            let remaining_minutes = Math.floor((remaining_time % (1000 * 60 * 60)) / (1000 * 60));
-            let remaining_seconds = Math.floor((remaining_time % (1000 * 60)) / 1000);
-
-            const day = Drupal.formatPlural(remaining_days, '1 day', '@count days');
-            const hour = Drupal.formatPlural(remaining_hours, '1 hour', '@count hours');
-            const min = Drupal.formatPlural(remaining_minutes, '1 minute', '@count minutes');
-            const sec = Drupal.formatPlural(remaining_seconds, '1 second', '@count seconds');
-            countdown_selector.textContent = (`${day} / ${hour} / ${min} / ${sec}`);
-            if (remaining_time < 0) {
-              clearInterval(start_timer);
-              // We should not reach here usually, unless someone have
-              // the page opened without refreshing when timer expires.
-              countdown_selector.textContent = Drupal.t('Expired');
-            }
-          }, 1000);
-        }
+      Object.entries(promoBars).forEach((item) => {
+        const [id, promoBar] = item;
 
         // Determine if promo bar is dismissible.
-        let dismissible = promobars[id].dismissible;
-
-        if (dismissible) {
-          // If is dismissed, remove it from DOM.
-          if (dismissedAlerts.includes(id)) {
-            removeAlert(id);
-          }
-          // Attach event to markup to trigger removal.
-          else {
-            const dismiss_action = document.querySelector('#promo-bar-' + id + ' .dismiss');
-            dismiss_action.addEventListener('click', (event) => {
-              dismissAlert(id);
-            });
+        if (promoBar.hasOwnProperty('dismissible')) {
+          const dismissible = promoBar.dismissible;
+          if (dismissible) {
+            // If is dismissed, remove it from DOM.
+            if (dismissedPromoBars.includes(id)) {
+              removePromoBar(id);
+            }
+            // Attach event to markup to trigger removal.
+            else {
+              const dismissAction = document.querySelector(
+                `#promo-bar-${id} .dismiss`,
+              );
+              dismissAction.addEventListener('click', (event) => {
+                dismissPromoBar(id);
+              });
+            }
           }
         }
-      }
+        // Set countdown if applicable.
+        if (promoBar.hasOwnProperty('countdown')) {
+          const countdownSelector = document.querySelector(
+            `.promo-bar-countdown-${id}`,
+          );
+          // We may remove it from DOM if is dismissible.
+          if (countdownSelector !== null) {
+            const countdown = promoBar.countdown;
+            const deadline = new Date(countdown);
+            const startTimer = setInterval(function () {
+              const remainingTime = deadline.getTime() - Date.now();
+              const remainingDays = Math.floor(
+                remainingTime / (1000 * 60 * 60 * 24),
+              );
+              const remainingHours = Math.floor(
+                (remainingTime % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60),
+              );
+              const remainingMinutes = Math.floor(
+                (remainingTime % (1000 * 60 * 60)) / (1000 * 60),
+              );
+              const remainingSeconds = Math.floor(
+                (remainingTime % (1000 * 60)) / 1000,
+              );
+
+              const day = Drupal.formatPlural(
+                remainingDays,
+                '1 day',
+                '@count days',
+              );
+              const hour = Drupal.formatPlural(
+                remainingHours,
+                '1 hour',
+                '@count hours',
+              );
+              const min = Drupal.formatPlural(
+                remainingMinutes,
+                '1 minute',
+                '@count minutes',
+              );
+              const sec = Drupal.formatPlural(
+                remainingSeconds,
+                '1 second',
+                '@count seconds',
+              );
+              countdownSelector.textContent = `${day} / ${hour} / ${min} / ${sec}`;
+              if (remainingTime < 0) {
+                clearInterval(startTimer);
+                // We should not reach here usually, unless someone have
+                // the page opened without refreshing when timer expires.
+                countdownSelector.textContent = Drupal.t('Expired');
+              }
+            }, 1000);
+          }
+        }
+      });
     },
   };
-
 })(Drupal, drupalSettings, once);

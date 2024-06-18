@@ -21,6 +21,6 @@ interface PromoBarStorageInterface extends ContentEntityStorageInterface {
    * @return \Drupal\commerce_promo_bar\Entity\PromoBarInterface[]
    *   The available promo bars.
    */
-  public function loadAvailable(StoreInterface $store, array $roles = []);
+  public function loadAvailable(StoreInterface $store, array $roles = []): array;
 
 }

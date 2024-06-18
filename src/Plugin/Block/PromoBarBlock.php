@@ -5,6 +5,7 @@ namespace Drupal\commerce_promo_bar\Plugin\Block;
 use Drupal\commerce_promo_bar\Entity\PromoBar;
 use Drupal\commerce_promo_bar\PromoBarStorageInterface;
 use Drupal\commerce_store\CurrentStoreInterface;
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
@@ -46,6 +47,11 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
   protected PromoBarStorageInterface|EntityStorageInterface $promoBarStorage;
 
   /**
+   * The time.
+   */
+  protected TimeInterface $time;
+
+  /**
    * Construct.
    *
    * @param array $configuration
@@ -60,13 +66,16 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
    *   The current store.
    * @param \Drupal\Core\Session\AccountProxyInterface $current_user
    *   The current user.
+   * @param \Drupal\Component\Datetime\TimeInterface $time
+   *   The time.
    */
-  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, CurrentStoreInterface $current_store, AccountProxyInterface $current_user) {
+  public function __construct(array $configuration, $plugin_id, $plugin_definition, EntityTypeManagerInterface $entity_type_manager, CurrentStoreInterface $current_store, AccountProxyInterface $current_user, TimeInterface $time) {
     parent::__construct($configuration, $plugin_id, $plugin_definition);
     $this->entityTypeManager = $entity_type_manager;
     $this->currentStore = $current_store;
     $this->currentUser = $current_user;
     $this->promoBarStorage = $entity_type_manager->getStorage('commerce_promo_bar');
+    $this->time = $time;
   }
 
   /**
@@ -79,7 +88,8 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
       $plugin_definition,
       $container->get('entity_type.manager'),
       $container->get('commerce_store.current_store'),
-      $container->get('current_user')
+      $container->get('current_user'),
+      $container->get('datetime.time')
     );
   }
 
@@ -120,7 +130,7 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
 
     $promo_bars = $this->promoBarStorage->loadAvailable($this->currentStore->getStore(), $this->currentUser->getRoles());
     $timezone = $this->currentStore->getStore()->getTimezone();
-    $timestamp = \Drupal::time()->getRequestTime();
+    $timestamp = $this->time->getRequestTime();
     $date = DrupalDateTime::createFromTimestamp($timestamp, $timezone);
     $js_settings = [];
     foreach ($promo_bars as $promo_bar) {

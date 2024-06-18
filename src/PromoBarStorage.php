@@ -6,8 +6,11 @@ use Drupal\commerce\CommerceContentEntityStorage;
 use Drupal\commerce_promo_bar\Event\FilterPromoBarsEvent;
 use Drupal\commerce_promo_bar\Event\PromoBarEvents;
 use Drupal\commerce_store\Entity\StoreInterface;
+use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Defines the promo bar storage.
@@ -15,15 +18,30 @@ use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 class PromoBarStorage extends CommerceContentEntityStorage implements PromoBarStorageInterface {
 
   /**
+   * The time.
+   */
+  protected TimeInterface $time;
+
+  /**
    * {@inheritdoc}
    */
-  public function loadAvailable(StoreInterface $store, array $roles = []) {
+  public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
+    $instance = parent::createInstance($container, $entity_type);
+    $instance->time = $container->get('datetime.time');
+    return $instance;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function loadAvailable(StoreInterface $store, array $roles = []): array {
     $timezone = $store->getTimezone();
-    $timestamp = \Drupal::time()->getRequestTime();
+    $timestamp = $this->time->getRequestTime();
     $date = DrupalDateTime::createFromTimestamp($timestamp, $timezone);
     $date = $date->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
 
     $query = $this->getQuery();
+    $query->accessCheck(FALSE);
     $or_condition = $query->orConditionGroup()
       ->condition('end_date', $date, '>')
       ->notExists('end_date');
@@ -34,8 +52,7 @@ class PromoBarStorage extends CommerceContentEntityStorage implements PromoBarSt
       ->condition('start_date', $date, '<=')
       ->condition('status', TRUE)
       ->condition($or_condition)
-      ->condition($store_condition)
-      ->accessCheck(FALSE);
+      ->condition($store_condition);
 
     if ($roles) {
       $roles_conditions = $query->orConditionGroup()

@@ -35,13 +35,13 @@ function commerce_promo_bar_theme() {
  *
  * @param array $variables
  *   An associative array containing:
- *   - elements: An associative array containing the commerce promo bar information and any
- *     fields attached to the entity.
+ *   - elements: An associative array containing the commerce promo bar
+ *     information and any fields attached to the entity.
  *   - attributes: HTML attributes for the containing element.
  */
 function template_preprocess_commerce_promo_bar(array &$variables) {
   $variables['view_mode'] = $variables['elements']['#view_mode'];
-  /** @var PromoBarInterface $commerce_promo_bar */
+  /** @var \Drupal\commerce_promo_bar\Entity\PromoBarInterface $commerce_promo_bar */
   $commerce_promo_bar = $variables['elements']['#commerce_promo_bar'];
   $variables['promo_bar_entity'] = $commerce_promo_bar;
   $variables['promo_bar'] = [];
@@ -65,7 +65,7 @@ function commerce_promo_bar_preprocess_field(&$variables, $hook) {
       $delta = 0;
       while (!empty($element[$delta])) {
         $variables['items'][$delta]['content']['#text'] = $token_service->replace($variables['items'][$delta]['content']['#text'], [
-          'commerce_promo_bar' => $element['#object']
+          'commerce_promo_bar' => $element['#object'],
         ]);
         $delta++;
       }

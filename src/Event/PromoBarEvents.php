@@ -2,6 +2,9 @@
 
 namespace Drupal\commerce_promo_bar\Event;
 
+/**
+ * List all available promo bar events.
+ */
 final class PromoBarEvents {
 
   /**

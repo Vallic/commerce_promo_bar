@@ -3,6 +3,7 @@
 namespace Drupal\commerce_promo_bar\Entity;
 
 use Drupal\commerce\Entity\CommerceContentEntityBase;
+use Drupal\commerce\EntityOwnerTrait;
 use Drupal\commerce_promotion\Entity\PromotionInterface;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityChangedTrait;
@@ -10,7 +11,6 @@ use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
-use Drupal\commerce\EntityOwnerTrait;
 
 /**
  * Defines the promo bar entity class.
@@ -552,7 +552,6 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
       ])
       ->setDisplayConfigurable('form', FALSE)
       ->setDisplayConfigurable('view', FALSE);
-
 
     $fields['uid'] = BaseFieldDefinition::create('entity_reference')
       ->setLabel(t('Author'))

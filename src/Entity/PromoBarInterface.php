@@ -232,5 +232,4 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    */
   public function isDismissible(): bool;
 
-
 }

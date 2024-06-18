@@ -34,7 +34,7 @@ CONFIGURATION
        module.
     2. Navigate to Home > Administration > Structure > Block layout and
        place Commerce Promo Bar block onto region where you want to show promo bars.
-       (if you want to show only one promobar always - uncheck Stack promo bars)
+       (if you want to show only one promo bar always - uncheck Stack promo bars)
     3. Navigate to Home > Administration > Commerce > Configuration > Promo Bar.
        if you want to add fields, or change display & form view modes.
 

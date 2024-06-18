@@ -25,16 +25,16 @@
   .layout-region-promo_bar-main,
   .layout-region-promo_bar-footer {
     float: left; /* LTR */
+    box-sizing: border-box;
     width: 65%;
     padding-right: 2em; /* LTR */
-    box-sizing: border-box;
   }
 
   [dir="rtl"] .layout-region-promo_bar-main,
   [dir="rtl"] .layout-region-promo_bar-footer {
     float: right;
-    padding-left: 2em;
     padding-right: 0;
+    padding-left: 2em;
   }
 
   .layout-region-promo_bar-secondary {
