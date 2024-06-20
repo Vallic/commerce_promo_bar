@@ -8,6 +8,8 @@
 use Drupal\Core\Field\BaseFieldDefinition;
 
 /**
+ * Add dismissible boolean field type.
+ *
  * Implements hook_update_N().
  */
 function commerce_promo_bar_update_10001(&$sandbox) {

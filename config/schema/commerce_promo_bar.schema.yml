@@ -1,0 +1,24 @@
+commerce_promo_bar.settings:
+  type: config_entity
+  label: 'Promo bar settings'
+  mapping:
+    background_color:
+      type: mapping
+      label: 'Default background color'
+      mapping:
+        color:
+          type: string
+          label: 'Color'
+        opacity:
+          type: integer
+          label: 'Opacity'
+    text_color:
+      type: mapping
+      label: 'Default text color'
+      mapping:
+        color:
+          type: string
+          label: 'Color'
+        opacity:
+          type: integer
+          label: 'Opacity'

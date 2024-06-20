@@ -6,6 +6,7 @@
  */
 
 use Drupal\commerce_promo_bar\Entity\PromoBarInterface;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Render\Element;
 
 /**
@@ -70,5 +71,16 @@ function commerce_promo_bar_preprocess_field(&$variables, $hook) {
         $delta++;
       }
     }
+  }
+}
+
+/**
+ * Implements hook_entity_base_field_info_alter().
+ */
+function commerce_promo_bar_entity_base_field_info_alter(&$fields, EntityTypeInterface $entity_type) {
+  if ($entity_type->id() === 'commerce_promo_bar') {
+    $config = \Drupal::config('commerce_promo_bar.settings');
+    $fields['text_color']['default_value'] = $config->get('text_color');
+    $fields['background_color']['default_value'] = $config->get('background_color');
   }
 }
