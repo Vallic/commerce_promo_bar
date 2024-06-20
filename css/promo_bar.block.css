@@ -13,7 +13,7 @@
   text-align: center;
 }
 
-.commerce-promo-bar span.dismiss {
+.commerce-promo-bar .dismiss {
   position: absolute;
   top: 10px;
   right: 10px;
