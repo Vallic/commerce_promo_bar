@@ -5,9 +5,9 @@
  * Provides a commerce promo bar entity type.
  */
 
-use Drupal\commerce_promo_bar\Entity\PromoBarInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Render\Element;
+use Drupal\commerce_promo_bar\Entity\PromoBarInterface;
 
 /**
  * Implements hook_theme().

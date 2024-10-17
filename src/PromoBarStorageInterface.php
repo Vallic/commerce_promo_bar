@@ -2,8 +2,8 @@
 
 namespace Drupal\commerce_promo_bar;
 
-use Drupal\commerce_store\Entity\StoreInterface;
 use Drupal\Core\Entity\ContentEntityStorageInterface;
+use Drupal\commerce_store\Entity\StoreInterface;
 
 /**
  * Defines the interface for promo bar storage.

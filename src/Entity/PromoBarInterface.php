@@ -2,10 +2,10 @@
 
 namespace Drupal\commerce_promo_bar\Entity;
 
-use Drupal\commerce_promotion\Entity\PromotionInterface;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\ContentEntityInterface;
 use Drupal\Core\Entity\EntityChangedInterface;
+use Drupal\commerce_promotion\Entity\PromotionInterface;
 use Drupal\user\EntityOwnerInterface;
 
 /**
@@ -115,7 +115,7 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    *
    * @return $this
    */
-  public function setEndDate(DrupalDateTime $end_date = NULL): static;
+  public function setEndDate(?DrupalDateTime $end_date = NULL): static;
 
   /**
    * Gets the promo bar countdown date/time.
@@ -136,7 +136,7 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    *
    * @return $this
    */
-  public function setCountdownDate(DrupalDateTime $end_date = NULL): static;
+  public function setCountdownDate(?DrupalDateTime $end_date = NULL): static;
 
   /**
    * Get whether the promo bar is enabled.

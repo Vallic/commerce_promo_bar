@@ -2,13 +2,13 @@
 
 namespace Drupal\commerce_promo_bar;
 
+use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\commerce\CommerceContentEntityStorage;
 use Drupal\commerce_promo_bar\Event\FilterPromoBarsEvent;
 use Drupal\commerce_promo_bar\Event\PromoBarEvents;
 use Drupal\commerce_store\Entity\StoreInterface;
-use Drupal\Component\Datetime\TimeInterface;
-use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 

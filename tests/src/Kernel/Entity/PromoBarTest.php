@@ -2,10 +2,10 @@
 
 namespace Drupal\Tests\commerce_promo_bar\Kernel\Entity;
 
-use Drupal\commerce_promo_bar\Entity\PromoBar;
 use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 use Drupal\Tests\commerce_order\Kernel\OrderKernelTestBase;
+use Drupal\commerce_promo_bar\Entity\PromoBar;
+use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
 
 /**
  * Tests the PromoBar entity.

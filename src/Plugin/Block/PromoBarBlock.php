@@ -2,9 +2,6 @@
 
 namespace Drupal\commerce_promo_bar\Plugin\Block;
 
-use Drupal\commerce_promo_bar\Entity\PromoBar;
-use Drupal\commerce_promo_bar\PromoBarStorageInterface;
-use Drupal\commerce_store\CurrentStoreInterface;
 use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Cache\Cache;
@@ -14,6 +11,9 @@ use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountProxyInterface;
+use Drupal\commerce_promo_bar\Entity\PromoBar;
+use Drupal\commerce_promo_bar\PromoBarStorageInterface;
+use Drupal\commerce_store\CurrentStoreInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
