@@ -3,11 +3,11 @@
 namespace Drupal\commerce_promo_bar\Entity;
 
 use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Entity\ContentEntityBase;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\Core\Field\BaseFieldDefinition;
-use Drupal\commerce\Entity\CommerceContentEntityBase;
 use Drupal\commerce\EntityOwnerTrait;
 use Drupal\commerce_promotion\Entity\PromotionInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
@@ -80,7 +80,7 @@ use Drupal\Core\Entity\Attribute\ContentEntityType;
     ],
     field_ui_base_route: "entity.commerce_promo_bar.settings",
 )]
-class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
+class PromoBar extends ContentEntityBase implements PromoBarInterface {
 
     use EntityChangedTrait;
     use EntityOwnerTrait;
