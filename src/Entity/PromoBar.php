@@ -3,7 +3,6 @@
 namespace Drupal\commerce_promo_bar\Entity;
 
 use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\Core\Entity\Attribute\ContentEntityType;
 use Drupal\Core\Entity\EntityChangedTrait;
 use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeInterface;
@@ -12,7 +11,6 @@ use Drupal\commerce\Entity\CommerceContentEntityBase;
 use Drupal\commerce\EntityOwnerTrait;
 use Drupal\commerce_promotion\Entity\PromotionInterface;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
-
 
 /**
  * Defines the promo bar entity class.
