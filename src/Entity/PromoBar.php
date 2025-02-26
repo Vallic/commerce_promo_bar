@@ -11,73 +11,80 @@ use Drupal\Core\Field\BaseFieldDefinition;
 use Drupal\commerce\Entity\CommerceContentEntityBase;
 use Drupal\commerce\EntityOwnerTrait;
 use Drupal\commerce_promotion\Entity\PromotionInterface;
-use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+
 
 /**
  * Defines the promo bar entity class.
+ *
+ * @ContentEntityType(
+ *   id = "commerce_promo_bar",
+ *   label = @Translation("Promo bar"),
+ *   label_collection = @Translation("Promo bars"),
+ *   label_singular = @Translation("promo bar"),
+ *   label_plural = @Translation("promo bars"),
+ *   label_count = @PluralTranslation(
+ *     singular = "@count promo bars",
+ *     plural = "@count promo bars",
+ *     context = "Commerce",
+ *   ),
+ *   handlers = {
+ *     "storage" = "Drupal\commerce_promo_bar\PromoBarStorage",
+ *     "permission_provider" = "Drupal\entity\EntityPermissionProvider",
+ *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
+ *     "list_builder" = "Drupal\commerce_promo_bar\PromoBarListBuilder",
+ *     "views_data" = "Drupal\views\EntityViewsData",
+ *     "access" = "Drupal\entity\EntityAccessControlHandler",
+ *     "event" = "Drupal\commerce_promo_bar\Event\PromoBarEvent",
+ *     "form" = {
+ *       "default" = "Drupal\commerce_promo_bar\Form\PromoBarForm",
+ *       "add" = "Drupal\commerce_promo_bar\Form\PromoBarForm",
+ *       "enable" = "Drupal\commerce_promo_bar\Form\PromoBarEnableForm",
+ *       "disable" = "Drupal\commerce_promo_bar\Form\PromoBarDisableForm",
+ *       "edit" = "Drupal\commerce_promo_bar\Form\PromoBarForm",
+ *       "duplicate" = "Drupal\commerce_promo_bar\Form\PromoBarForm",
+ *       "delete" = "Drupal\Core\Entity\ContentEntityDeleteForm",
+ *     },
+ *     "route_provider" = {
+ *       "default" = "Drupal\commerce_promo_bar\PromoBarRouteProvider",
+ *       "delete-multiple" = "Drupal\entity\Routing\DeleteMultipleRouteProvider",
+ *     },
+ *   },
+ *   base_table = "commerce_promo_bar",
+ *   data_table = "commerce_promo_bar_field_data",
+ *   translatable = TRUE,
+ *   translation = {
+ *     "content_translation" = {
+ *       "access_callback" = "content_translation_translate_access"
+ *     },
+ *   },
+ *   admin_permission = "administer commerce promo bar",
+ *   entity_keys = {
+ *     "id" = "id",
+ *     "langcode" = "langcode",
+ *     "label" = "label",
+ *     "uuid" = "uuid",
+ *     "owner" = "uid",
+ *     "status" = "status",
+ *   },
+ *   links = {
+ *     "collection" = "/admin/commerce/promo-bars",
+ *     "add-form" = "/promo-bar/add",
+ *     "edit-form" = "/promo-bar/{commerce_promo_bar}/edit",
+ *     "enable-form" = "/promo-bar/{commerce_promo_bar}/enable",
+ *     "disable-form" = "/promo-bar/{commerce_promo_bar}/disable",
+ *     "duplicate-form" = "/promo-bar/{commerce_promo_bar}/duplicate",
+ *     "delete-form" = "/promo-bar/{commerce_promo_bar}/delete",
+ *     "delete-multiple-form" = "/admin/commerce/promo-bars/delete",
+ *     "reorder" = "/admin/commerce/promo-bars/reorder",
+ *     "drupal:content-translation-overview" = "/promo-bar/{commerce_promo_bar}/translations",
+ *     "drupal:content-translation-add" = "/promo-bar/{commerce_promo_bar}/translations/add/{source}/{target}",
+ *     "drupal:content-translation-edit" = "/promo-bar/{commerce_promo_bar}/translations/edit/{language}",
+ *     "drupal:content-translation-delete" = "/promo-bar/{commerce_promo_bar}/translations/delete/{language}",
+ *   },
+ *   field_ui_base_route = "entity.commerce_promo_bar.settings",
+ * )
  */
-#[ContentEntityType(
-  id: 'commerce_promo_bar',
-  label: new TranslatableMarkup('Promo bar'),
-  label_collection: new TranslatableMarkup('Promo bars'),
-  label_singular: new TranslatableMarkup('promo bar'),
-  label_plural: new TranslatableMarkup('promo bars'),
-  entity_keys: [
-    'id' => 'id',
-    'langcode' => 'langcode',
-    'label' => 'label',
-    'uuid' => 'uuid',
-    'owner' => 'uid',
-    'status' => 'status',
-  ],
-  handlers: [
-    'storage' => 'Drupal\commerce_promo_bar\PromoBarStorage',
-    'permission_provider' => 'Drupal\entity\EntityPermissionProvider',
-    'view_builder' => 'Drupal\Core\Entity\EntityViewBuilder',
-    'list_builder' => 'Drupal\commerce_promo_bar\PromoBarListBuilder',
-    'views_data' => 'Drupal\views\EntityViewsData',
-    'access' => 'Drupal\entity\EntityAccessControlHandler',
-    'event' => 'Drupal\commerce_promo_bar\Event\PromoBarEvent',
-    'form' => [
-      'default' => 'Drupal\commerce_promo_bar\Form\PromoBarForm',
-      'add' => 'Drupal\commerce_promo_bar\Form\PromoBarForm',
-      'enable' => 'Drupal\commerce_promo_bar\Form\PromoBarEnableForm',
-      'disable' => 'Drupal\commerce_promo_bar\Form\PromoBarDisableForm',
-      'edit' => 'Drupal\commerce_promo_bar\Form\PromoBarForm',
-      'duplicate' => 'Drupal\commerce_promo_bar\Form\PromoBarForm',
-      'delete' => 'Drupal\Core\Entity\ContentEntityDeleteForm',
-    ],
-    'route_provider' => [
-      'default' => 'Drupal\commerce_promo_bar\PromoBarRouteProvider',
-      'delete-multiple' => 'Drupal\entity\Routing\DeleteMultipleRouteProvider',
-    ],
-  ],
-  links: [
-    'collection' => '/admin/commerce/promo-bars',
-    'add-form' => '/promo-bar/add',
-    'edit-form' => '/promo-bar/{commerce_promo_bar}/edit',
-    'enable-form' => '/promo-bar/{commerce_promo_bar}/enable',
-    'disable-form' => '/promo-bar/{commerce_promo_bar}/disable',
-    'duplicate-form' => '/promo-bar/{commerce_promo_bar}/duplicate',
-    'delete-form' => '/promo-bar/{commerce_promo_bar}/delete',
-    'delete-multiple-form' => '/admin/commerce/promo-bars/delete',
-    'reorder' => '/admin/commerce/promo-bars/reorder',
-    'drupal:content-translation-overview' => '/promo-bar/{commerce_promo_bar}/translations',
-    'drupal:content-translation-add' => '/promo-bar/{commerce_promo_bar}/translations/add/{source}/{target}',
-    'drupal:content-translation-edit' => '/promo-bar/{commerce_promo_bar}/translations/edit/{language}',
-    'drupal:content-translation-delete' => '/promo-bar/{commerce_promo_bar}/translations/delete/{language}',
-  ],
-  admin_permission: 'administer commerce promo bar',
-  base_table: 'commerce_promo_bar',
-  data_table: 'commerce_promo_bar_field_data',
-  translatable: TRUE,
-  label_count: [
-    'singular' => '@count promo bars',
-    'plural' => '@count promo bars',
-  ],
-  field_ui_base_route: 'entity.commerce_promo_bar.settings',
-)]
 class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
 
   use EntityChangedTrait;
