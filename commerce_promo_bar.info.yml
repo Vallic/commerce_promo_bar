@@ -5,6 +5,7 @@ package: Commerce
 core_version_requirement: ^10.3 || ^11
 configure: entity.commerce_promo_bar.settings
 dependencies:
+  - address:address
   - commerce:commerce_promotion
   - drupal:options
   - color_field:color_field

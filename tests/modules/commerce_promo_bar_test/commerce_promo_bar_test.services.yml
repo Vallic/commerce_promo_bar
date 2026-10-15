@@ -1,0 +1,12 @@
+services:
+  commerce_promo_bar_test.country_resolver:
+    class: Drupal\commerce_promo_bar_test\TestCountryResolver
+    arguments: ['@state']
+    tags:
+      - { name: commerce.country_resolver, priority: 100 }
+
+  commerce_promo_bar_test.filter_promo_bars_subscriber:
+    class: Drupal\commerce_promo_bar_test\EventSubscriber\FilterPromoBarsSubscriber
+    arguments: ['@state']
+    tags:
+      - { name: event_subscriber }

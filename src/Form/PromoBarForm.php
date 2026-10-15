@@ -73,6 +73,8 @@ class PromoBarForm extends ContentEntityForm {
       'end_date' => 'date_details',
       'countdown_date' => 'date_details',
       'customer_roles' => 'visibility_details',
+      'countries' => 'visibility_details',
+      'country_visibility' => 'visibility_details',
       'visibility' => 'visibility_details',
       'pages' => 'visibility_details',
     ];

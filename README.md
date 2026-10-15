@@ -58,6 +58,7 @@ FEATURES
 * set countdown date and display countdown timer
 * restrict visibility per store
 * restrict visibility per customer role
+* restrict visibility per country (show or hide for the listed countries)
 * restrict visibility per any path
 
 CUSTOMIZATION
@@ -69,6 +70,12 @@ view mode / field formatters to achieve some customizations.
 To use it within Promo Bar body, insert them with tokens
 
 NOTES:
+
+_The country is the one Commerce resolves for the current request
+(`commerce.current_country`). Without a country resolver of your own, that
+is the current store's country, then the site's default country. To use the
+customer's location, add a service tagged `commerce.country_resolver`, for
+example one that reads a CDN country header or GeoIP._
 
 _Javascript which provides functionality for countdown timer expects
 existence of class `promo-bar-countdown-1` where number 1 from example

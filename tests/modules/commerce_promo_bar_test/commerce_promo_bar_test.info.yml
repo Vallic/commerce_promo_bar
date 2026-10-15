@@ -1,0 +1,7 @@
+name: 'Commerce Promo Bar test'
+type: module
+description: 'Contains various non-specific things needed in tests.'
+package: Testing
+hidden: true
+dependencies:
+  - commerce_promo_bar:commerce_promo_bar

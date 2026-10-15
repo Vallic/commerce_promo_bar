@@ -37,6 +37,47 @@ function commerce_promo_bar_update_10001(&$sandbox) {
 }
 
 /**
+ * Add the countries and country visibility fields.
+ */
+function commerce_promo_bar_update_10002() {
+  $storage_definitions = [];
+  $storage_definitions['countries'] = BaseFieldDefinition::create('address_country')
+    ->setLabel(t('Countries'))
+    ->setDescription(t('Restrict display of promo bar per customer country. Leave empty to show in all countries.'))
+    ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
+    ->setTranslatable(FALSE)
+    ->setRequired(FALSE)
+    ->setSettings(['display_description' => TRUE])
+    ->setDisplayOptions('form', [
+      'type' => 'address_country_default',
+      'weight' => 21,
+    ]);
+
+  $storage_definitions['country_visibility'] = BaseFieldDefinition::create('boolean')
+    ->setLabel(t('Country visibility'))
+    ->setDescription(t('Applicable only if countries field is not empty'))
+    ->setDefaultValue(TRUE)
+    ->setInitialValue(TRUE)
+    ->setRequired(TRUE)
+    ->setTranslatable(FALSE)
+    ->setSettings([
+      'on_label' => t('Show for the listed countries'),
+      'off_label' => t('Hide for the listed countries'),
+    ])
+    ->setDisplayOptions('form', [
+      'type' => 'options_buttons',
+      'weight' => 22,
+    ]);
+
+  $update_manager = \Drupal::entityDefinitionUpdateManager();
+  foreach ($storage_definitions as $field_name => $storage_definition) {
+    if (!$update_manager->getFieldStorageDefinition($field_name, 'commerce_promo_bar')) {
+      $update_manager->installFieldStorageDefinition($field_name, 'commerce_promo_bar', 'commerce_promo_bar', $storage_definition);
+    }
+  }
+}
+
+/**
  * Implements hook_uninstall().
  */
 function commerce_promo_bar_uninstall() {

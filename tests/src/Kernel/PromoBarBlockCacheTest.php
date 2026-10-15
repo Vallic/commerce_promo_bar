@@ -9,6 +9,10 @@ use Drupal\Tests\commerce_order\Kernel\OrderKernelTestBase;
 use Drupal\block\Entity\Block;
 use Drupal\commerce_promo_bar\Entity\PromoBar;
 use Drupal\commerce_promo_bar\Entity\PromoBarInterface;
+use Drupal\commerce_promo_bar_test\TestCountryResolver;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Session\Session;
+use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 /**
  * Tests the cacheability of the promo bar block.
@@ -26,6 +30,7 @@ class PromoBarBlockCacheTest extends OrderKernelTestBase {
     'block',
     'commerce_promotion',
     'commerce_promo_bar',
+    'commerce_promo_bar_test',
     'color_field',
   ];
 
@@ -72,6 +77,24 @@ class PromoBarBlockCacheTest extends OrderKernelTestBase {
 
     $this->setCurrentUser($this->createUser());
     $this->assertStringContainsString('Customers only', $this->renderBlock($block));
+  }
+
+  /**
+   * Tests that the block varies by country.
+   *
+   * @covers ::getCacheContexts
+   */
+  public function testCountryCacheContext(): void {
+    $this->createPromoBar('France only', -3600, NULL, [
+      'countries' => ['FR'],
+    ]);
+    $block = $this->placeBlock();
+
+    $this->setCountry('US');
+    $this->assertStringNotContainsString('France only', $this->renderBlock($block));
+
+    $this->setCountry('FR');
+    $this->assertStringContainsString('France only', $this->renderBlock($block));
   }
 
   /**
@@ -150,6 +173,21 @@ class PromoBarBlockCacheTest extends OrderKernelTestBase {
    */
   protected function storeDate(int $offset): DrupalDateTime {
     return DrupalDateTime::createFromTimestamp($this->requestTime + $offset, $this->store->getTimezone());
+  }
+
+  /**
+   * Sets the country the test resolver returns.
+   *
+   * The current country is cached per request, so a new request is pushed.
+   *
+   * @param string $country_code
+   *   The country code.
+   */
+  protected function setCountry(string $country_code): void {
+    $this->container->get('state')->set(TestCountryResolver::STATE_KEY, $country_code);
+    $request = Request::create('/');
+    $request->setSession(new Session(new MockArraySessionStorage()));
+    $this->container->get('request_stack')->push($request);
   }
 
   /**

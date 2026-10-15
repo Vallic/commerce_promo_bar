@@ -326,6 +326,28 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
   /**
    * {@inheritdoc}
    */
+  public function getCountries(): array {
+    return array_column($this->get('countries')->getValue(), 'value');
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function setCountries(array $country_codes): static {
+    $this->set('countries', $country_codes);
+    return $this;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function isCountryVisibility(): bool {
+    return (bool) $this->get('country_visibility')->value;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function isDismissible(): bool {
     return (bool) $this->get('dismissible')->value;
   }
@@ -508,6 +530,34 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
       ->setDisplayOptions('form', [
         'type' => 'options_buttons',
         'weight' => 20,
+      ]);
+
+    $fields['countries'] = BaseFieldDefinition::create('address_country')
+      ->setLabel(t('Countries'))
+      ->setDescription(t('Restrict display of promo bar per customer country. Leave empty to show in all countries.'))
+      ->setCardinality(BaseFieldDefinition::CARDINALITY_UNLIMITED)
+      ->setTranslatable(FALSE)
+      ->setRequired(FALSE)
+      ->setSettings(['display_description' => TRUE])
+      ->setDisplayOptions('form', [
+        'type' => 'address_country_default',
+        'weight' => 21,
+      ]);
+
+    $fields['country_visibility'] = BaseFieldDefinition::create('boolean')
+      ->setLabel(t('Country visibility'))
+      ->setDescription(t('Applicable only if countries field is not empty'))
+      ->setDefaultValue(TRUE)
+      ->setInitialValue(TRUE)
+      ->setRequired(TRUE)
+      ->setTranslatable(FALSE)
+      ->setSettings([
+        'on_label' => t('Show for the listed countries'),
+        'off_label' => t('Hide for the listed countries'),
+      ])
+      ->setDisplayOptions('form', [
+        'type' => 'options_buttons',
+        'weight' => 22,
       ]);
 
     $fields['pages'] = BaseFieldDefinition::create('string_long')

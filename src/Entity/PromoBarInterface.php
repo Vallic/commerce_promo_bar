@@ -228,6 +228,34 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
   public function setCustomerRoles(array $rids): static;
 
   /**
+   * Gets the countries.
+   *
+   * @return string[]
+   *   The country codes, or an empty array if the promo bar is not
+   *   restricted by country.
+   */
+  public function getCountries(): array;
+
+  /**
+   * Sets the countries.
+   *
+   * @param string[] $country_codes
+   *   The country codes.
+   *
+   * @return $this
+   */
+  public function setCountries(array $country_codes): static;
+
+  /**
+   * Gets whether the promo bar is shown or hidden for the listed countries.
+   *
+   * @return bool
+   *   TRUE if the promo bar is shown only for the listed countries, FALSE if
+   *   it is hidden for them. Applicable only if countries are listed.
+   */
+  public function isCountryVisibility(): bool;
+
+  /**
    * Determine if promo bar can be dismissed.
    */
   public function isDismissible(): bool;

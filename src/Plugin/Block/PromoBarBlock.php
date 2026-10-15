@@ -194,6 +194,8 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
     $contexts[] = 'store';
     // Promo bars can be restricted by customer roles.
     $contexts[] = 'user.roles';
+    // Promo bars can be restricted by countries.
+    $contexts[] = 'country';
     return $contexts;
   }
 
