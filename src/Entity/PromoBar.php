@@ -125,7 +125,7 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
    * {@inheritdoc}
    */
   public function getDescription(): string {
-    return $this->get('body')->value;
+    return (string) $this->get('body')->value;
   }
 
   /**
@@ -511,15 +511,8 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
       ->setRequired(FALSE)
       ->setDisplayConfigurable('form', TRUE)
       ->setDisplayOptions('form', [
-        'type' => 'inline_entity_form_complex',
+        'type' => 'commerce_promo_bar_promotion',
         'weight' => 15,
-        'settings' => [
-          'allow_existing' => TRUE,
-          'override_labels' => TRUE,
-          'label_singular' => t('promotion'),
-          'label_plural' => t('promotions'),
-          'removed_reference' => 'keep',
-        ],
       ]);
 
     $fields['customer_roles'] = BaseFieldDefinition::create('entity_reference')
@@ -591,7 +584,7 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
 
     $fields['dismissible'] = BaseFieldDefinition::create('boolean')
       ->setLabel(t('Dismissible'))
-      ->setDescription(t('Visitors will be able to dismiss the promo bar. This is per session.'))
+      ->setDescription(t('Visitors will be able to dismiss the promo bar. The dismissal is remembered in their browser until they clear its site data.'))
       ->setRequired(FALSE)
       ->setDisplayOptions('form', [
         'type' => 'boolean_checkbox',
@@ -680,32 +673,17 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
    *
    * @return bool
    *   True or false.
+   *
+   * @deprecated in commerce_promo_bar:1.0.7 and is removed from
+   *   commerce_promo_bar:2.0.0. Use
+   *   \Drupal\commerce_promo_bar\PromoBarVisibilityInterface::isVisible()
+   *   instead.
+   *
+   * @see https://www.drupal.org/node/3631082
    */
   public static function evaluateVisibility(PromoBarInterface $promo_bar): bool {
-    if (empty($promo_bar->getPages())) {
-      return TRUE;
-    }
-
-    // Convert path to lowercase. This allows comparison of the same path
-    // with different case. Ex: /Page, /page, /PAGE.
-    $pages = mb_strtolower($promo_bar->getPages());
-
-    // True means show, false is hide.
-    $visibility = (bool) $promo_bar->get('visibility')->value;
-
-    $request = \Drupal::requestStack()->getCurrentRequest();
-    $current_path = \Drupal::service('path.current');
-    $alias_manager = \Drupal::service('path_alias.manager');
-    $path_matcher = \Drupal::service('path.matcher');
-
-    // Compare the lowercase path alias (if any) and internal path.
-    $path = $current_path->getPath($request);
-    // Do not trim a trailing slash if that is the complete path.
-    $path = $path === '/' ? $path : rtrim($path, '/');
-    $path_alias = mb_strtolower($alias_manager->getAliasByPath($path));
-
-    $matches = $path_matcher->matchPath($path_alias, $pages) || (($path != $path_alias) && $path_matcher->matchPath($path, $pages));
-    return $matches ? $visibility : !$visibility;
+    @trigger_error(__METHOD__ . '() is deprecated in commerce_promo_bar:1.0.7 and is removed from commerce_promo_bar:2.0.0. Use \Drupal\commerce_promo_bar\PromoBarVisibilityInterface::isVisible() instead. See https://www.drupal.org/node/3631082', E_USER_DEPRECATED);
+    return \Drupal::service('commerce_promo_bar.visibility')->isVisible($promo_bar);
   }
 
 }

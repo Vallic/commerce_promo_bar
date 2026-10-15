@@ -18,6 +18,16 @@ class FilterPromoBarsSubscriber implements EventSubscriberInterface {
   const STATE_KEY = 'commerce_promo_bar_test.filtered';
 
   /**
+   * The state key holding the received path and account ID.
+   */
+  const CONTEXT_STATE_KEY = 'commerce_promo_bar_test.filter_context';
+
+  /**
+   * The state key of a flag that adds a cache context.
+   */
+  const ADD_CONTEXT_STATE_KEY = 'commerce_promo_bar_test.add_context';
+
+  /**
    * Constructs a new FilterPromoBarsSubscriber object.
    *
    * @param \Drupal\Core\State\StateInterface $state
@@ -33,7 +43,7 @@ class FilterPromoBarsSubscriber implements EventSubscriberInterface {
   }
 
   /**
-   * Records the labels of the promo bars.
+   * Records the promo bars and the context they are filtered for.
    *
    * @param \Drupal\commerce_promo_bar\Event\FilterPromoBarsEvent $event
    *   The event.
@@ -44,6 +54,13 @@ class FilterPromoBarsSubscriber implements EventSubscriberInterface {
       $labels[] = $promo_bar->label();
     }
     $this->state->set(self::STATE_KEY, $labels);
+    $this->state->set(self::CONTEXT_STATE_KEY, [
+      'path' => $event->getPath(),
+      'account' => $event->getAccount()?->id(),
+    ]);
+    if ($this->state->get(self::ADD_CONTEXT_STATE_KEY)) {
+      $event->getCacheability()->addCacheContexts(['url.query_args:promo_test']);
+    }
   }
 
 }

@@ -6,13 +6,12 @@ use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Block\Attribute\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Cache\Cache;
-use Drupal\Core\Datetime\DrupalDateTime;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
-use Drupal\commerce_promo_bar\Entity\PromoBar;
 use Drupal\commerce_store\CurrentStoreInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -124,39 +123,20 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
     /** @var \Drupal\commerce_promo_bar\PromoBarStorageInterface $promo_bar_storage */
     $promo_bar_storage = $this->entityTypeManager->getStorage('commerce_promo_bar');
     $store = $this->currentStore->getStore();
-    $promo_bars = $promo_bar_storage->loadAvailable($store, $this->currentUser->getRoles());
+    $cacheability = new CacheableMetadata();
+    $promo_bars = $promo_bar_storage->loadVisible($store, $this->currentUser, NULL, $cacheability);
     $timezone = $store->getTimezone();
     $timestamp = $this->time->getRequestTime();
-    $date = DrupalDateTime::createFromTimestamp($timestamp, $timezone);
     $js_settings = [];
 
-    // The output is only valid until the next scheduled promo bar starts,
-    // an available one ends, or a visible countdown runs out.
-    $changes = [];
-    if ($next_promo_bar = $promo_bar_storage->loadNextScheduled($store)) {
-      $changes[] = $next_promo_bar->getStartDate($timezone)->getTimestamp();
-    }
+    $view_builder = $this->entityTypeManager->getViewBuilder('commerce_promo_bar');
     foreach ($promo_bars as $promo_bar) {
-      if ($end_date = $promo_bar->getEndDate($timezone)) {
-        $changes[] = $end_date->getTimestamp();
+      $visible_promo_bars[] = $view_builder->view($promo_bar);
+      $countdown_date = $promo_bar->getCountdownDate($timezone);
+      if ($countdown_date && $countdown_date->getTimestamp() > $timestamp) {
+        $js_settings[$promo_bar->id()]['countdown'] = $countdown_date->format('c');
       }
-    }
-
-    foreach ($promo_bars as $promo_bar) {
-      // Visibility is handled here, and not in storage, because
-      // we handle page visibility here only - for display purposes.
-      // All general restrictions are handled in
-      // \Drupal\commerce_promo_bar\PromoBarStorage::loadAvailable
-      // so that we have ability to pull all promo bars regardless
-      // of per page visibility.
-      if (PromoBar::evaluateVisibility($promo_bar)) {
-        $visible_promo_bars[] = $this->entityTypeManager->getViewBuilder('commerce_promo_bar')->view($promo_bar);
-        if ($promo_bar->getCountdownDate() && $promo_bar->getCountdownDate($timezone)->getTimestamp() > $date->getTimestamp()) {
-          $js_settings[$promo_bar->id()]['countdown'] = $promo_bar->getCountdownDate($timezone)->format('c');
-          $changes[] = $promo_bar->getCountdownDate($timezone)->getTimestamp();
-        }
-        $js_settings[$promo_bar->id()]['dismissible'] = $promo_bar->isDismissible();
-      }
+      $js_settings[$promo_bar->id()]['dismissible'] = $promo_bar->isDismissible();
     }
 
     // If on block settings is set to show only one promo bar always
@@ -167,7 +147,7 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
       ];
     }
 
-    return [
+    $build = [
       '#theme' => 'commerce_promo_bar_block',
       '#promo_bars' => $visible_promo_bars,
       '#attached' => [
@@ -179,10 +159,9 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
           'commercePromoBar' => $js_settings,
         ],
       ],
-      '#cache' => [
-        'max-age' => $changes ? max(0, min($changes) - $timestamp) : Cache::PERMANENT,
-      ],
     ];
+    $cacheability->applyTo($build);
+    return $build;
   }
 
   /**

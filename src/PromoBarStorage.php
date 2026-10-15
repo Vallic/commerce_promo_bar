@@ -3,8 +3,11 @@
 namespace Drupal\commerce_promo_bar;
 
 use Drupal\Component\Datetime\TimeInterface;
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Path\CurrentPathStack;
+use Drupal\Core\Session\AccountInterface;
 use Drupal\commerce\CommerceContentEntityStorage;
 use Drupal\commerce\CurrentCountryInterface;
 use Drupal\commerce_promo_bar\Entity\PromoBarInterface;
@@ -30,12 +33,24 @@ class PromoBarStorage extends CommerceContentEntityStorage implements PromoBarSt
   protected CurrentCountryInterface $currentCountry;
 
   /**
+   * The current path.
+   */
+  protected CurrentPathStack $currentPath;
+
+  /**
+   * The promo bar visibility.
+   */
+  protected PromoBarVisibilityInterface $visibility;
+
+  /**
    * {@inheritdoc}
    */
   public static function createInstance(ContainerInterface $container, EntityTypeInterface $entity_type) {
     $instance = parent::createInstance($container, $entity_type);
     $instance->time = $container->get('datetime.time');
     $instance->currentCountry = $container->get('commerce.current_country');
+    $instance->currentPath = $container->get('path.current');
+    $instance->visibility = $container->get('commerce_promo_bar.visibility');
     return $instance;
   }
 
@@ -43,6 +58,69 @@ class PromoBarStorage extends CommerceContentEntityStorage implements PromoBarSt
    * {@inheritdoc}
    */
   public function loadAvailable(StoreInterface $store, array $roles = []): array {
+    return $this->doLoadAvailable($store, $roles);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function loadVisible(StoreInterface $store, AccountInterface $account, ?string $path = NULL, ?CacheableMetadata $cacheability = NULL): array {
+    $cacheability ??= new CacheableMetadata();
+    $cacheability->addCacheTags($this->entityType->getListCacheTags());
+    $cacheability->addCacheContexts(['store', 'user.roles', 'country']);
+    if ($path === NULL) {
+      $path = $this->currentPath->getPath();
+      $cacheability->addCacheContexts(['url.path']);
+    }
+
+    $promo_bars = $this->doLoadAvailable($store, $account->getRoles(), $path, $account, $cacheability);
+
+    $timezone = $store->getTimezone();
+    $now = $this->time->getRequestTime();
+    // The result is only valid until the next scheduled promo bar starts,
+    // an available one ends, or a visible countdown runs out.
+    $changes = [];
+    if ($next_promo_bar = $this->loadNextScheduled($store)) {
+      $changes[] = $next_promo_bar->getStartDate($timezone)->getTimestamp();
+    }
+    foreach ($promo_bars as $id => $promo_bar) {
+      if ($end_date = $promo_bar->getEndDate($timezone)) {
+        $changes[] = $end_date->getTimestamp();
+      }
+      if (!$this->visibility->isVisible($promo_bar, $path)) {
+        unset($promo_bars[$id]);
+        continue;
+      }
+      $countdown_date = $promo_bar->getCountdownDate($timezone);
+      if ($countdown_date && $countdown_date->getTimestamp() > $now) {
+        $changes[] = $countdown_date->getTimestamp();
+      }
+    }
+    if ($changes) {
+      $cacheability->mergeCacheMaxAge(max(0, min($changes) - $now));
+    }
+
+    return $promo_bars;
+  }
+
+  /**
+   * Loads the available promo bars and lets subscribers filter them.
+   *
+   * @param \Drupal\commerce_store\Entity\StoreInterface $store
+   *   The commerce store.
+   * @param array $roles
+   *   The user roles. An empty array skips the customer roles check.
+   * @param string|null $path
+   *   The page path, or NULL if not loaded for a page.
+   * @param \Drupal\Core\Session\AccountInterface|null $account
+   *   The customer, or NULL if not known.
+   * @param \Drupal\Core\Cache\CacheableMetadata|null $cacheability
+   *   The cacheability, which event subscribers add to.
+   *
+   * @return \Drupal\commerce_promo_bar\Entity\PromoBarInterface[]
+   *   The available promo bars.
+   */
+  protected function doLoadAvailable(StoreInterface $store, array $roles, ?string $path = NULL, ?AccountInterface $account = NULL, ?CacheableMetadata $cacheability = NULL): array {
     $date = $this->getStoreDate($store);
 
     $query = $this->getQuery();
@@ -82,7 +160,7 @@ class PromoBarStorage extends CommerceContentEntityStorage implements PromoBarSt
 
     // Sort the remaining promo bars.
     uasort($promo_bars, [$this->entityType->getClass(), 'sort']);
-    $event = new FilterPromoBarsEvent($promo_bars, $store);
+    $event = new FilterPromoBarsEvent($promo_bars, $store, $path, $account, $cacheability);
     $this->eventDispatcher->dispatch($event, PromoBarEvents::FILTER_PROMO_BARS);
 
     return $event->getPromoBars();

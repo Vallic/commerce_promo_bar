@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Entity\EntityTypeInterface;
+use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Core\Render\Element;
 use Drupal\commerce_promo_bar\Entity\PromoBarInterface;
 
@@ -61,13 +62,16 @@ function commerce_promo_bar_preprocess_field(&$variables, $hook) {
   // Replacing tokens from body with real values.
   if (isset($element['#entity_type'], $element['#field_name'], $element['#object'])) {
     if ($element['#entity_type'] === 'commerce_promo_bar' && $element['#field_name'] === 'body' && $element['#object'] instanceof PromoBarInterface) {
-      $token_service = \Drupal::token();
+      /** @var \Drupal\commerce_promo_bar\PromoBarBodyProcessorInterface $body_processor */
+      $body_processor = \Drupal::service('commerce_promo_bar.body_processor');
 
       $delta = 0;
       while (!empty($element[$delta])) {
-        $variables['items'][$delta]['content']['#text'] = $token_service->replace($variables['items'][$delta]['content']['#text'], [
-          'commerce_promo_bar' => $element['#object'],
-        ]);
+        $content = &$variables['items'][$delta]['content'];
+        $bubbleable_metadata = BubbleableMetadata::createFromRenderArray($content);
+        $content['#text'] = $body_processor->replaceTokens((string) $content['#text'], $element['#object'], $bubbleable_metadata);
+        $bubbleable_metadata->applyTo($content);
+        unset($content);
         $delta++;
       }
     }

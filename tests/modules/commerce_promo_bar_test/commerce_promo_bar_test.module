@@ -1,0 +1,16 @@
+<?php
+
+/**
+ * @file
+ * Test module for Commerce Promo Bar.
+ */
+
+/**
+ * Implements hook_commerce_promotion_offer_info_alter().
+ */
+function commerce_promo_bar_test_commerce_promotion_offer_info_alter(array &$definitions) {
+  // Commerce's offer plugin select needs JavaScript to switch the plugin
+  // configuration form. Leave one plugin, so that its configuration form is
+  // there from the start in tests without JavaScript.
+  $definitions = array_intersect_key($definitions, ['order_percentage_off' => TRUE]);
+}

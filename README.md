@@ -69,6 +69,25 @@ view mode / field formatters to achieve some customizations.
 * Promo Bar entity is field-able, so you can add any field to the entity.
 To use it within Promo Bar body, insert them with tokens
 
+API
+--------------
+The rules the block uses are available to API resources and other front
+ends:
+
+* `PromoBarStorageInterface::loadVisible($store, $account, $path,
+  $cacheability)` returns the promo bars visible to a customer on a page:
+  available for the store, customer roles and country, filtered by
+  `FilterPromoBarsEvent`, then by page visibility. Pass the front-end page
+  path, or NULL for the current request path. The cacheability collects the
+  cache tags, contexts and the max-age until the next scheduled change.
+* `commerce_promo_bar.visibility` checks the page visibility of one promo bar
+  for a path.
+* `commerce_promo_bar.body_processor` returns the body with tokens replaced
+  and the text format applied, for output that does not render the entity.
+* `FilterPromoBarsEvent` subscribers get the path and the customer through
+  `getPath()` and `getAccount()`, and add their cache contexts to
+  `getCacheability()`.
+
 NOTES:
 
 _The country is the one Commerce resolves for the current request

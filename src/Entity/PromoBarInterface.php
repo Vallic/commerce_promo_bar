@@ -37,7 +37,7 @@ interface PromoBarInterface extends ContentEntityInterface, EntityOwnerInterface
    * Gets the promo bar description.
    *
    * @return string
-   *   The promo bar description.
+   *   The promo bar description, or an empty string if there is no body.
    */
   public function getDescription(): string;
 

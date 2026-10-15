@@ -69,6 +69,7 @@ class PromoBarTest extends OrderKernelTestBase {
     $promo_bar->setName('My PromoBar');
     $this->assertEquals('My PromoBar', $promo_bar->getName());
 
+    $this->assertSame('', $promo_bar->getDescription());
     $promo_bar->setDescription('My PromoBar Description');
     $this->assertEquals('My PromoBar Description', $promo_bar->getDescription());
 

@@ -2,3 +2,13 @@ services:
   commerce_promo_bar.cron:
     class: Drupal\commerce_promo_bar\Cron
     arguments: ['@entity_type.manager', '@keyvalue', '@datetime.time', '@cache_tags.invalidator']
+
+  commerce_promo_bar.visibility:
+    class: Drupal\commerce_promo_bar\PromoBarVisibility
+    arguments: ['@path.current', '@path_alias.manager', '@path.matcher', '@config.factory']
+  Drupal\commerce_promo_bar\PromoBarVisibilityInterface: '@commerce_promo_bar.visibility'
+
+  commerce_promo_bar.body_processor:
+    class: Drupal\commerce_promo_bar\PromoBarBodyProcessor
+    arguments: ['@token', '@renderer']
+  Drupal\commerce_promo_bar\PromoBarBodyProcessorInterface: '@commerce_promo_bar.body_processor'

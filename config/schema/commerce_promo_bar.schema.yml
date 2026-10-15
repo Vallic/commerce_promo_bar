@@ -30,3 +30,11 @@ block.settings.promo_bar_block:
     stack:
       type: boolean
       label: 'Stack promo bars'
+
+field.widget.settings.commerce_promo_bar_promotion:
+  type: mapping
+  label: 'Existing or new promotion widget settings'
+  mapping:
+    form_mode:
+      type: string
+      label: 'Form mode of new promotions'
