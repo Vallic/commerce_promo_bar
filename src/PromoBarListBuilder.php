@@ -2,6 +2,7 @@
 
 namespace Drupal\commerce_promo_bar;
 
+use Drupal\Core\Cache\CacheableMetadata;
 use Drupal\Core\Entity\EntityInterface;
 use Drupal\Core\Entity\EntityListBuilder;
 use Drupal\Core\Entity\EntityStorageInterface;
@@ -226,9 +227,12 @@ class PromoBarListBuilder extends EntityListBuilder implements FormInterface {
   /**
    * {@inheritdoc}
    */
-  protected function getDefaultOperations(EntityInterface $entity) {
-    $operations = parent::getDefaultOperations($entity);
-    if ($entity->access('update')) {
+  protected function getDefaultOperations(EntityInterface $entity, ?CacheableMetadata $cacheability = NULL) {
+    $cacheability ??= new CacheableMetadata();
+    $operations = parent::getDefaultOperations($entity, $cacheability);
+    $update_access = $entity->access('update', NULL, TRUE);
+    $cacheability->addCacheableDependency($update_access);
+    if ($update_access->isAllowed()) {
       if (!$entity->isEnabled() && $entity->hasLinkTemplate('enable-form')) {
         $operations['enable'] = [
           'title' => $this->t('Enable'),

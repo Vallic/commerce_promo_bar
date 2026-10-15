@@ -8,4 +8,3 @@ dependencies:
   - commerce:commerce_promotion
   - drupal:options
   - color_field:color_field
-

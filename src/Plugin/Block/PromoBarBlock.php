@@ -13,7 +13,6 @@ use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
 use Drupal\Core\Session\AccountProxyInterface;
 use Drupal\Core\StringTranslation\TranslatableMarkup;
 use Drupal\commerce_promo_bar\Entity\PromoBar;
-use Drupal\commerce_promo_bar\PromoBarStorageInterface;
 use Drupal\commerce_store\CurrentStoreInterface;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -40,11 +39,6 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
    * The current user.
    */
   protected AccountProxyInterface $currentUser;
-
-  /**
-   * The promo_bar storage.
-   */
-  protected PromoBarStorageInterface $promoBarStorage;
 
   /**
    * The time.
@@ -74,9 +68,6 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
     $this->entityTypeManager = $entity_type_manager;
     $this->currentStore = $current_store;
     $this->currentUser = $current_user;
-    /** @var \Drupal\commerce_promo_bar\PromoBarStorageInterface $promo_bar_storage */
-    $promo_bar_storage = $entity_type_manager->getStorage('commerce_promo_bar');
-    $this->promoBarStorage = $promo_bar_storage;
     $this->time = $time;
   }
 
@@ -130,8 +121,10 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
   public function build() {
     $visible_promo_bars = [];
 
+    /** @var \Drupal\commerce_promo_bar\PromoBarStorageInterface $promo_bar_storage */
+    $promo_bar_storage = $this->entityTypeManager->getStorage('commerce_promo_bar');
     $store = $this->currentStore->getStore();
-    $promo_bars = $this->promoBarStorage->loadAvailable($store, $this->currentUser->getRoles());
+    $promo_bars = $promo_bar_storage->loadAvailable($store, $this->currentUser->getRoles());
     $timezone = $store->getTimezone();
     $timestamp = $this->time->getRequestTime();
     $date = DrupalDateTime::createFromTimestamp($timestamp, $timezone);
@@ -140,7 +133,7 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
     // The output is only valid until the next scheduled promo bar starts,
     // an available one ends, or a visible countdown runs out.
     $changes = [];
-    if ($next_promo_bar = $this->promoBarStorage->loadNextScheduled($store)) {
+    if ($next_promo_bar = $promo_bar_storage->loadNextScheduled($store)) {
       $changes[] = $next_promo_bar->getStartDate($timezone)->getTimestamp();
     }
     foreach ($promo_bars as $promo_bar) {
