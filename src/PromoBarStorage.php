@@ -6,6 +6,7 @@ use Drupal\Component\Datetime\TimeInterface;
 use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Core\Entity\EntityTypeInterface;
 use Drupal\commerce\CommerceContentEntityStorage;
+use Drupal\commerce_promo_bar\Entity\PromoBarInterface;
 use Drupal\commerce_promo_bar\Event\FilterPromoBarsEvent;
 use Drupal\commerce_promo_bar\Event\PromoBarEvents;
 use Drupal\commerce_store\Entity\StoreInterface;
@@ -35,10 +36,7 @@ class PromoBarStorage extends CommerceContentEntityStorage implements PromoBarSt
    * {@inheritdoc}
    */
   public function loadAvailable(StoreInterface $store, array $roles = []): array {
-    $timezone = $store->getTimezone();
-    $timestamp = $this->time->getRequestTime();
-    $date = DrupalDateTime::createFromTimestamp($timestamp, $timezone);
-    $date = $date->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
+    $date = $this->getStoreDate($store);
 
     $query = $this->getQuery();
     $query->accessCheck(FALSE);
@@ -73,6 +71,48 @@ class PromoBarStorage extends CommerceContentEntityStorage implements PromoBarSt
     $this->eventDispatcher->dispatch($event, PromoBarEvents::FILTER_PROMO_BARS);
 
     return $event->getPromoBars();
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public function loadNextScheduled(StoreInterface $store): ?PromoBarInterface {
+    $query = $this->getQuery();
+    $query->accessCheck(FALSE);
+    $store_condition = $query->orConditionGroup()
+      ->notExists('stores')
+      ->condition('stores', $store->id());
+    $result = $query
+      ->condition('start_date', $this->getStoreDate($store), '>')
+      ->condition('status', TRUE)
+      ->condition($store_condition)
+      ->sort('start_date')
+      ->range(0, 1)
+      ->execute();
+
+    if (!$result) {
+      return NULL;
+    }
+
+    /** @var \Drupal\commerce_promo_bar\Entity\PromoBarInterface|null $promo_bar */
+    $promo_bar = $this->load(reset($result));
+    return $promo_bar;
+  }
+
+  /**
+   * Gets the request time as a storage date in the store's timezone.
+   *
+   * Promo bar dates are entered and stored in the store's timezone.
+   *
+   * @param \Drupal\commerce_store\Entity\StoreInterface $store
+   *   The commerce store.
+   *
+   * @return string
+   *   The date, in the datetime storage format.
+   */
+  protected function getStoreDate(StoreInterface $store): string {
+    $date = DrupalDateTime::createFromTimestamp($this->time->getRequestTime(), $store->getTimezone());
+    return $date->format(DateTimeItemInterface::DATETIME_STORAGE_FORMAT);
   }
 
 }

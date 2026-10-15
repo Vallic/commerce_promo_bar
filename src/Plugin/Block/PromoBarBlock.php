@@ -7,7 +7,6 @@ use Drupal\Core\Block\Attribute\Block;
 use Drupal\Core\Block\BlockBase;
 use Drupal\Core\Cache\Cache;
 use Drupal\Core\Datetime\DrupalDateTime;
-use Drupal\Core\Entity\EntityStorageInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Plugin\ContainerFactoryPluginInterface;
@@ -45,7 +44,7 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
   /**
    * The promo_bar storage.
    */
-  protected PromoBarStorageInterface|EntityStorageInterface $promoBarStorage;
+  protected PromoBarStorageInterface $promoBarStorage;
 
   /**
    * The time.
@@ -75,7 +74,9 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
     $this->entityTypeManager = $entity_type_manager;
     $this->currentStore = $current_store;
     $this->currentUser = $current_user;
-    $this->promoBarStorage = $entity_type_manager->getStorage('commerce_promo_bar');
+    /** @var \Drupal\commerce_promo_bar\PromoBarStorageInterface $promo_bar_storage */
+    $promo_bar_storage = $entity_type_manager->getStorage('commerce_promo_bar');
+    $this->promoBarStorage = $promo_bar_storage;
     $this->time = $time;
   }
 
@@ -129,11 +130,25 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
   public function build() {
     $visible_promo_bars = [];
 
-    $promo_bars = $this->promoBarStorage->loadAvailable($this->currentStore->getStore(), $this->currentUser->getRoles());
-    $timezone = $this->currentStore->getStore()->getTimezone();
+    $store = $this->currentStore->getStore();
+    $promo_bars = $this->promoBarStorage->loadAvailable($store, $this->currentUser->getRoles());
+    $timezone = $store->getTimezone();
     $timestamp = $this->time->getRequestTime();
     $date = DrupalDateTime::createFromTimestamp($timestamp, $timezone);
     $js_settings = [];
+
+    // The output is only valid until the next scheduled promo bar starts,
+    // an available one ends, or a visible countdown runs out.
+    $changes = [];
+    if ($next_promo_bar = $this->promoBarStorage->loadNextScheduled($store)) {
+      $changes[] = $next_promo_bar->getStartDate($timezone)->getTimestamp();
+    }
+    foreach ($promo_bars as $promo_bar) {
+      if ($end_date = $promo_bar->getEndDate($timezone)) {
+        $changes[] = $end_date->getTimestamp();
+      }
+    }
+
     foreach ($promo_bars as $promo_bar) {
       // Visibility is handled here, and not in storage, because
       // we handle page visibility here only - for display purposes.
@@ -145,6 +160,7 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
         $visible_promo_bars[] = $this->entityTypeManager->getViewBuilder('commerce_promo_bar')->view($promo_bar);
         if ($promo_bar->getCountdownDate() && $promo_bar->getCountdownDate($timezone)->getTimestamp() > $date->getTimestamp()) {
           $js_settings[$promo_bar->id()]['countdown'] = $promo_bar->getCountdownDate($timezone)->format('c');
+          $changes[] = $promo_bar->getCountdownDate($timezone)->getTimestamp();
         }
         $js_settings[$promo_bar->id()]['dismissible'] = $promo_bar->isDismissible();
       }
@@ -170,6 +186,9 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
           'commercePromoBar' => $js_settings,
         ],
       ],
+      '#cache' => [
+        'max-age' => $changes ? max(0, min($changes) - $timestamp) : Cache::PERMANENT,
+      ],
     ];
   }
 
@@ -180,6 +199,8 @@ class PromoBarBlock extends BlockBase implements ContainerFactoryPluginInterface
     $contexts = parent::getCacheContexts();
     $contexts[] = 'url.path';
     $contexts[] = 'store';
+    // Promo bars can be restricted by customer roles.
+    $contexts[] = 'user.roles';
     return $contexts;
   }
 

@@ -22,3 +22,11 @@ commerce_promo_bar.settings:
         opacity:
           type: integer
           label: 'Opacity'
+
+block.settings.promo_bar_block:
+  type: block_settings
+  label: 'Promo bar block'
+  mapping:
+    stack:
+      type: boolean
+      label: 'Stack promo bars'
