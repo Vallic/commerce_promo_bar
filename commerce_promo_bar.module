@@ -84,3 +84,10 @@ function commerce_promo_bar_entity_base_field_info_alter(&$fields, EntityTypeInt
     $fields['background_color']['default_value'] = $config->get('background_color');
   }
 }
+
+/**
+ * Implements hook_cron().
+ */
+function commerce_promo_bar_cron() {
+  \Drupal::service('commerce_promo_bar.cron')->run();
+}

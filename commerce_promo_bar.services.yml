@@ -1,0 +1,4 @@
+services:
+  commerce_promo_bar.cron:
+    class: Drupal\commerce_promo_bar\Cron
+    arguments: ['@entity_type.manager', '@keyvalue', '@datetime.time', '@cache_tags.invalidator']

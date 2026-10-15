@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Field\BaseFieldDefinition;
+use Drupal\commerce_promo_bar\Cron;
 
 /**
  * Add dismissible boolean field type.
@@ -33,4 +34,11 @@ function commerce_promo_bar_update_10001(&$sandbox) {
     $update_manager->installFieldStorageDefinition('dismissible', 'commerce_promo_bar', 'commerce_promo_bar', $storage_definition);
   }
 
+}
+
+/**
+ * Implements hook_uninstall().
+ */
+function commerce_promo_bar_uninstall() {
+  \Drupal::keyValue(Cron::COLLECTION)->deleteAll();
 }
