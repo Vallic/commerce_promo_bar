@@ -125,7 +125,6 @@ class PromoBarVisibilityTest extends OrderKernelTestBase {
   public function testEvaluateVisibility(): void {
     $message = 'Drupal\commerce_promo_bar\Entity\PromoBar::evaluateVisibility() is deprecated in commerce_promo_bar:1.0.7 and is removed from commerce_promo_bar:2.0.0. Use \Drupal\commerce_promo_bar\PromoBarVisibilityInterface::isVisible() instead. See https://www.drupal.org/node/3631082';
     // PHPUnit 9, used with Drupal 10, has no expectUserDeprecationMessage().
-    // @phpstan-ignore function.alreadyNarrowedType
     if (method_exists($this, 'expectUserDeprecationMessage')) {
       $this->expectUserDeprecationMessage($message);
     }
@@ -162,3 +161,4 @@ class PromoBarVisibilityTest extends OrderKernelTestBase {
   }
 
 }
+
