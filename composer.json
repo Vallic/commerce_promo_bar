@@ -8,5 +8,11 @@
         "drupal/commerce": "^2.4 || ^3",
         "drupal/color_field": "~3.0"
     },
+    "require-dev": {
+        "drupal/jsonapi_resources": "^1.0"
+    },
+    "suggest": {
+        "drupal/jsonapi_resources": "Needed by the Commerce Promo Bar JSON:API submodule, which serves the visible promo bars at /jsonapi/promo-bars."
+    },
     "minimum-stability": "dev"
 }

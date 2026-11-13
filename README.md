@@ -88,6 +88,30 @@ ends:
   `getPath()` and `getAccount()`, and add their cache contexts to
   `getCacheability()`.
 
+JSON:API
+--------------
+The Commerce Promo Bar JSON:API submodule (`commerce_promo_bar_jsonapi`,
+needs JSON:API Resources) serves the promo bars visible on a page:
+
+    GET /jsonapi/promo-bars?pagePath=/blog
+
+* One `promo-bar` resource per promo bar, in the order of `loadVisible()`,
+  with the attributes `title`, `message` (tokens replaced, text format
+  applied), `background_color`, `text_color`, `countdown_date` (ISO 8601, or
+  null) and `dismissible`.
+* `pagePath` is the front-end page, without the language prefix. Without it,
+  the front page (`/`).
+* The store, customer, country and language are the ones Drupal resolves for
+  the request, as for the block. The response carries their cache contexts
+  and expires at the next scheduled change.
+* Anyone may request it: the promo bar rules decide what a customer sees.
+
+To add attributes, decorate the `commerce_promo_bar_jsonapi.promo_bars`
+service with a subclass of
+`Drupal\commerce_promo_bar_jsonapi\Resource\PromoBars` that overrides
+`getAttributeNames()` and `getAttributes()`. Add the cacheability of what
+they read to the `$cacheability` they receive.
+
 NOTES:
 
 _The country is the one Commerce resolves for the current request

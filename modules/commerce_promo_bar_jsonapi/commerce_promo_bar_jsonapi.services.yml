@@ -1,0 +1,9 @@
+services:
+  commerce_promo_bar_jsonapi.promo_bars:
+    class: Drupal\commerce_promo_bar_jsonapi\Resource\PromoBars
+    arguments:
+      - '@entity_type.manager'
+      - '@entity.repository'
+      - '@commerce_store.current_store'
+      - '@current_user'
+      - '@commerce_promo_bar.body_processor'
