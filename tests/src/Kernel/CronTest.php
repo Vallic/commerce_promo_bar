@@ -7,14 +7,16 @@ use Drupal\Tests\commerce_order\Kernel\OrderKernelTestBase;
 use Drupal\commerce_promo_bar\Cron;
 use Drupal\commerce_promo_bar\Entity\PromoBar;
 use Drupal\commerce_promo_bar\Entity\PromoBarInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the cache invalidation on cron.
- *
- * @coversDefaultClass \Drupal\commerce_promo_bar\Cron
- *
- * @group commerce_promo_bar
  */
+#[CoversClass(Cron::class)]
+#[Group('commerce_promo_bar')]
+#[RunTestsInSeparateProcesses]
 class CronTest extends OrderKernelTestBase {
 
   /**
@@ -50,8 +52,6 @@ class CronTest extends OrderKernelTestBase {
 
   /**
    * Tests that the first run only records the run time.
-   *
-   * @covers ::run
    */
   public function testFirstRun(): void {
     $this->createPromoBar(-300);
@@ -64,8 +64,6 @@ class CronTest extends OrderKernelTestBase {
 
   /**
    * Tests that a promo bar starting since the previous run invalidates.
-   *
-   * @covers ::run
    */
   public function testStart(): void {
     $this->createPromoBar(-300);
@@ -78,8 +76,6 @@ class CronTest extends OrderKernelTestBase {
 
   /**
    * Tests that hook_cron() runs the job.
-   *
-   * @covers ::run
    */
   public function testHookCron(): void {
     $this->createPromoBar(-300);
@@ -93,8 +89,6 @@ class CronTest extends OrderKernelTestBase {
 
   /**
    * Tests that an end or countdown since the previous run invalidates.
-   *
-   * @covers ::run
    */
   public function testEndAndCountdown(): void {
     $promo_bar = $this->createPromoBar(-3600);
@@ -114,8 +108,6 @@ class CronTest extends OrderKernelTestBase {
 
   /**
    * Tests the promo bars that must not invalidate.
-   *
-   * @covers ::run
    */
   public function testNoChange(): void {
     // Started before the previous run.
@@ -132,8 +124,6 @@ class CronTest extends OrderKernelTestBase {
 
   /**
    * Tests that each store's promo bars are checked in its own timezone.
-   *
-   * @covers ::run
    */
   public function testStoreTimezone(): void {
     $other_store = $this->createStore('Other store', 'other@example.com', 'online', FALSE);

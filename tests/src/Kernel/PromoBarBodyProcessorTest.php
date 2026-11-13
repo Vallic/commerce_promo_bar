@@ -7,14 +7,17 @@ use Drupal\Core\Render\BubbleableMetadata;
 use Drupal\Tests\commerce_order\Kernel\OrderKernelTestBase;
 use Drupal\commerce_promo_bar\Entity\PromoBar;
 use Drupal\commerce_promo_bar\Entity\PromoBarInterface;
+use Drupal\commerce_promo_bar\PromoBarBodyProcessor;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the promo bar body processing.
- *
- * @coversDefaultClass \Drupal\commerce_promo_bar\PromoBarBodyProcessor
- *
- * @group commerce_promo_bar
  */
+#[CoversClass(PromoBarBodyProcessor::class)]
+#[Group('commerce_promo_bar')]
+#[RunTestsInSeparateProcesses]
 class PromoBarBodyProcessorTest extends OrderKernelTestBase {
 
   /**
@@ -41,9 +44,6 @@ class PromoBarBodyProcessorTest extends OrderKernelTestBase {
 
   /**
    * Tests the tokens and filters outside of entity rendering.
-   *
-   * @covers ::process
-   * @covers ::replaceTokens
    */
   public function testProcess(): void {
     $promo_bar = $this->createPromoBar('Welcome to [site:name] <b>today</b>');
@@ -65,8 +65,6 @@ class PromoBarBodyProcessorTest extends OrderKernelTestBase {
 
   /**
    * Tests that rendering the promo bar bubbles the token cacheability.
-   *
-   * @covers ::replaceTokens
    */
   public function testRender(): void {
     $promo_bar = $this->createPromoBar('Welcome to [site:name]');

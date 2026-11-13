@@ -5,19 +5,23 @@ namespace Drupal\Tests\commerce_promo_bar\Kernel;
 use Drupal\Tests\commerce_order\Kernel\OrderKernelTestBase;
 use Drupal\commerce_promo_bar\Entity\PromoBar;
 use Drupal\commerce_promo_bar\Entity\PromoBarInterface;
+use Drupal\commerce_promo_bar\PromoBarStorage;
 use Drupal\commerce_promo_bar_test\EventSubscriber\FilterPromoBarsSubscriber;
 use Drupal\commerce_promo_bar_test\TestCountryResolver;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 /**
  * Tests restricting promo bars by country.
- *
- * @coversDefaultClass \Drupal\commerce_promo_bar\PromoBarStorage
- *
- * @group commerce_promo_bar
  */
+#[CoversClass(PromoBarStorage::class)]
+#[CoversClass(PromoBar::class)]
+#[Group('commerce_promo_bar')]
+#[RunTestsInSeparateProcesses]
 class PromoBarCountryTest extends OrderKernelTestBase {
 
   /**
@@ -42,10 +46,6 @@ class PromoBarCountryTest extends OrderKernelTestBase {
 
   /**
    * Tests the country fields.
-   *
-   * @covers \Drupal\commerce_promo_bar\Entity\PromoBar::getCountries
-   * @covers \Drupal\commerce_promo_bar\Entity\PromoBar::setCountries
-   * @covers \Drupal\commerce_promo_bar\Entity\PromoBar::isCountryVisibility
    */
   public function testFields(): void {
     $promo_bar = $this->createPromoBar('All countries');
@@ -63,8 +63,6 @@ class PromoBarCountryTest extends OrderKernelTestBase {
 
   /**
    * Tests the available promo bars per country.
-   *
-   * @covers ::loadAvailable
    */
   public function testLoadAvailable(): void {
     $this->createPromoBar('All countries');
@@ -93,8 +91,6 @@ class PromoBarCountryTest extends OrderKernelTestBase {
 
   /**
    * Tests that the filter event only receives promo bars for the country.
-   *
-   * @covers ::loadAvailable
    */
   public function testFilterEvent(): void {
     $this->createPromoBar('All countries');

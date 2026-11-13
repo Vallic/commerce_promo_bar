@@ -2,7 +2,7 @@ name: Commerce Promo Bar JSON:API
 type: module
 description: 'Serves the promo bars visible on a page at GET /jsonapi/promo-bars, for decoupled front ends.'
 package: Commerce
-core_version_requirement: ^10.3 || ^11
+core_version_requirement: ^11
 dependencies:
   - commerce_promo_bar:commerce_promo_bar
   - drupal:jsonapi

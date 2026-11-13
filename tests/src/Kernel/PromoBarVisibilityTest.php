@@ -5,16 +5,19 @@ namespace Drupal\Tests\commerce_promo_bar\Kernel;
 use Drupal\Tests\commerce_order\Kernel\OrderKernelTestBase;
 use Drupal\commerce_promo_bar\Entity\PromoBar;
 use Drupal\commerce_promo_bar\Entity\PromoBarInterface;
+use Drupal\commerce_promo_bar\PromoBarVisibility;
 use Drupal\commerce_promo_bar\PromoBarVisibilityInterface;
 use Drupal\path_alias\Entity\PathAlias;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the page visibility of promo bars.
- *
- * @coversDefaultClass \Drupal\commerce_promo_bar\PromoBarVisibility
- *
- * @group commerce_promo_bar
  */
+#[CoversClass(PromoBarVisibility::class)]
+#[Group('commerce_promo_bar')]
+#[RunTestsInSeparateProcesses]
 class PromoBarVisibilityTest extends OrderKernelTestBase {
 
   /**
@@ -46,8 +49,6 @@ class PromoBarVisibilityTest extends OrderKernelTestBase {
 
   /**
    * Tests showing and hiding for explicit paths.
-   *
-   * @covers ::isVisible
    */
   public function testExplicitPath(): void {
     $this->assertTrue($this->visibility->isVisible($this->createPromoBar(''), '/anything'));
@@ -66,8 +67,6 @@ class PromoBarVisibilityTest extends OrderKernelTestBase {
 
   /**
    * Tests that aliases and internal paths match each other.
-   *
-   * @covers ::isVisible
    */
   public function testAlias(): void {
     // Aliases are only looked up for the path roots of existing routes.
@@ -86,8 +85,6 @@ class PromoBarVisibilityTest extends OrderKernelTestBase {
 
   /**
    * Tests that "/" counts as the front page.
-   *
-   * @covers ::isVisible
    */
   public function testFrontPage(): void {
     $this->config('system.site')->set('page.front', '/node/1')->save();
@@ -100,8 +97,6 @@ class PromoBarVisibilityTest extends OrderKernelTestBase {
 
   /**
    * Tests that the current path is used without an explicit path.
-   *
-   * @covers ::isVisible
    */
   public function testCurrentPath(): void {
     $promo_bar = $this->createPromoBar('/blog', TRUE);
@@ -113,27 +108,6 @@ class PromoBarVisibilityTest extends OrderKernelTestBase {
 
     $this->container->get('path.current')->setPath('/shop');
     $this->assertFalse($this->visibility->isVisible($promo_bar));
-  }
-
-  /**
-   * Tests the deprecated static visibility method.
-   *
-   * @covers \Drupal\commerce_promo_bar\Entity\PromoBar::evaluateVisibility
-   *
-   * @group legacy
-   */
-  public function testEvaluateVisibility(): void {
-    $message = 'Drupal\commerce_promo_bar\Entity\PromoBar::evaluateVisibility() is deprecated in commerce_promo_bar:1.0.7 and is removed from commerce_promo_bar:2.0.0. Use \Drupal\commerce_promo_bar\PromoBarVisibilityInterface::isVisible() instead. See https://www.drupal.org/node/3631082';
-    // PHPUnit 9, used with Drupal 10, has no expectUserDeprecationMessage().
-    if (method_exists($this, 'expectUserDeprecationMessage')) {
-      $this->expectUserDeprecationMessage($message);
-    }
-    else {
-      $this->expectDeprecation($message);
-    }
-
-    $this->container->get('path.current')->setPath('/blog');
-    $this->assertTrue(PromoBar::evaluateVisibility($this->createPromoBar('/blog', TRUE)));
   }
 
   /**
@@ -161,4 +135,3 @@ class PromoBarVisibilityTest extends OrderKernelTestBase {
   }
 
 }
-

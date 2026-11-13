@@ -7,16 +7,19 @@ use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Tests\commerce_order\Kernel\OrderKernelTestBase;
 use Drupal\commerce_promo_bar\Entity\PromoBar;
 use Drupal\commerce_promo_bar\Entity\PromoBarInterface;
+use Drupal\commerce_promo_bar_jsonapi\Resource\PromoBars;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 /**
  * Tests GET /jsonapi/promo-bars.
- *
- * @coversDefaultClass \Drupal\commerce_promo_bar_jsonapi\Resource\PromoBars
- *
- * @group commerce_promo_bar
  */
+#[CoversClass(PromoBars::class)]
+#[Group('commerce_promo_bar')]
+#[RunTestsInSeparateProcesses]
 class PromoBarsResourceTest extends OrderKernelTestBase {
 
   /**
@@ -54,9 +57,6 @@ class PromoBarsResourceTest extends OrderKernelTestBase {
 
   /**
    * Tests the promo bars of a page and their attributes.
-   *
-   * @covers ::process
-   * @covers ::getAttributes
    */
   public function testProcess(): void {
     $everywhere = $this->createPromoBar('Everywhere', [

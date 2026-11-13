@@ -9,18 +9,21 @@ use Drupal\Tests\commerce_order\Kernel\OrderKernelTestBase;
 use Drupal\block\Entity\Block;
 use Drupal\commerce_promo_bar\Entity\PromoBar;
 use Drupal\commerce_promo_bar\Entity\PromoBarInterface;
+use Drupal\commerce_promo_bar\Plugin\Block\PromoBarBlock;
 use Drupal\commerce_promo_bar_test\TestCountryResolver;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Session\Session;
 use Symfony\Component\HttpFoundation\Session\Storage\MockArraySessionStorage;
 
 /**
  * Tests the cacheability of the promo bar block.
- *
- * @coversDefaultClass \Drupal\commerce_promo_bar\Plugin\Block\PromoBarBlock
- *
- * @group commerce_promo_bar
  */
+#[CoversClass(PromoBarBlock::class)]
+#[Group('commerce_promo_bar')]
+#[RunTestsInSeparateProcesses]
 class PromoBarBlockCacheTest extends OrderKernelTestBase {
 
   /**
@@ -64,8 +67,6 @@ class PromoBarBlockCacheTest extends OrderKernelTestBase {
 
   /**
    * Tests that the block varies by customer roles.
-   *
-   * @covers ::getCacheContexts
    */
   public function testRolesCacheContext(): void {
     $this->createPromoBar('Customers only', -3600, NULL, [
@@ -81,8 +82,6 @@ class PromoBarBlockCacheTest extends OrderKernelTestBase {
 
   /**
    * Tests that the block varies by country.
-   *
-   * @covers ::getCacheContexts
    */
   public function testCountryCacheContext(): void {
     $this->createPromoBar('France only', -3600, NULL, [
@@ -99,8 +98,6 @@ class PromoBarBlockCacheTest extends OrderKernelTestBase {
 
   /**
    * Tests that the block expires when the available promo bars change.
-   *
-   * @covers ::build
    */
   public function testMaxAge(): void {
     $block = $this->placeBlock();

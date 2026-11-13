@@ -9,16 +9,19 @@ use Drupal\Core\Session\AnonymousUserSession;
 use Drupal\Tests\commerce_order\Kernel\OrderKernelTestBase;
 use Drupal\commerce_promo_bar\Entity\PromoBar;
 use Drupal\commerce_promo_bar\Entity\PromoBarInterface;
+use Drupal\commerce_promo_bar\PromoBarStorage;
 use Drupal\commerce_promo_bar\PromoBarStorageInterface;
 use Drupal\commerce_promo_bar_test\EventSubscriber\FilterPromoBarsSubscriber;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests loading the promo bars visible to a customer on a page.
- *
- * @coversDefaultClass \Drupal\commerce_promo_bar\PromoBarStorage
- *
- * @group commerce_promo_bar
  */
+#[CoversClass(PromoBarStorage::class)]
+#[Group('commerce_promo_bar')]
+#[RunTestsInSeparateProcesses]
 class PromoBarLoadVisibleTest extends OrderKernelTestBase {
 
   /**
@@ -51,8 +54,6 @@ class PromoBarLoadVisibleTest extends OrderKernelTestBase {
 
   /**
    * Tests the visible promo bars per page and customer.
-   *
-   * @covers ::loadVisible
    */
   public function testLoadVisible(): void {
     $this->createPromoBar('Everywhere');
@@ -72,9 +73,6 @@ class PromoBarLoadVisibleTest extends OrderKernelTestBase {
 
   /**
    * Tests the context the filter event receives.
-   *
-   * @covers ::loadVisible
-   * @covers ::loadAvailable
    */
   public function testFilterEventContext(): void {
     $this->createPromoBar('Everywhere');
@@ -101,8 +99,6 @@ class PromoBarLoadVisibleTest extends OrderKernelTestBase {
 
   /**
    * Tests the cacheability of the result.
-   *
-   * @covers ::loadVisible
    */
   public function testCacheability(): void {
     $anonymous = new AnonymousUserSession();

@@ -665,25 +665,4 @@ class PromoBar extends CommerceContentEntityBase implements PromoBarInterface {
     return ($a_weight < $b_weight) ? -1 : 1;
   }
 
-  /**
-   * Determine promo bar visibility per specific page.
-   *
-   * @param \Drupal\commerce_promo_bar\Entity\PromoBarInterface $promo_bar
-   *   The promo bar.
-   *
-   * @return bool
-   *   True or false.
-   *
-   * @deprecated in commerce_promo_bar:1.0.7 and is removed from
-   *   commerce_promo_bar:2.0.0. Use
-   *   \Drupal\commerce_promo_bar\PromoBarVisibilityInterface::isVisible()
-   *   instead.
-   *
-   * @see https://www.drupal.org/node/3631082
-   */
-  public static function evaluateVisibility(PromoBarInterface $promo_bar): bool {
-    @trigger_error(__METHOD__ . '() is deprecated in commerce_promo_bar:1.0.7 and is removed from commerce_promo_bar:2.0.0. Use \Drupal\commerce_promo_bar\PromoBarVisibilityInterface::isVisible() instead. See https://www.drupal.org/node/3631082', E_USER_DEPRECATED);
-    return \Drupal::service('commerce_promo_bar.visibility')->isVisible($promo_bar);
-  }
-
 }

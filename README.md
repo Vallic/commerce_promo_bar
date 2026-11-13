@@ -17,8 +17,9 @@ via the bar on top pages or any positions.
 
 REQUIREMENTS
 ------------
-This module requires Drupal Commerce 2, and it's submodule promotion and
-Color field module.
+This module requires Drupal 11, Drupal Commerce 3 with its Promotion
+submodule, and the Color Field and Address modules. Drupal 10 and Commerce 2
+are supported by the 1.0.x branch.
 
 
 INSTALLATION

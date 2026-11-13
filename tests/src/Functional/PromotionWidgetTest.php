@@ -4,18 +4,21 @@ namespace Drupal\Tests\commerce_promo_bar\Functional;
 
 use Drupal\Tests\commerce\Functional\CommerceBrowserTestBase;
 use Drupal\commerce_promo_bar\Entity\PromoBarInterface;
+use Drupal\commerce_promo_bar\Plugin\Field\FieldWidget\PromotionWidget;
 use Drupal\commerce_promotion\Entity\Promotion;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the promotion widget of the promo bar form.
  *
  * Runs without JavaScript, so the mode is applied with the "Change promotion"
  * button.
- *
- * @coversDefaultClass \Drupal\commerce_promo_bar\Plugin\Field\FieldWidget\PromotionWidget
- *
- * @group commerce_promo_bar
  */
+#[CoversClass(PromotionWidget::class)]
+#[Group('commerce_promo_bar')]
+#[RunTestsInSeparateProcesses]
 class PromotionWidgetTest extends CommerceBrowserTestBase {
 
   /**
@@ -41,9 +44,6 @@ class PromotionWidgetTest extends CommerceBrowserTestBase {
 
   /**
    * Tests referencing an existing promotion and removing it.
-   *
-   * @covers ::formElement
-   * @covers ::extractFormValues
    */
   public function testExistingPromotion(): void {
     $promotion = Promotion::create([
@@ -98,9 +98,6 @@ class PromotionWidgetTest extends CommerceBrowserTestBase {
 
   /**
    * Tests creating a new promotion with the promo bar.
-   *
-   * @covers ::formElement
-   * @covers ::extractFormValues
    */
   public function testNewPromotion(): void {
     $this->drupalGet('promo-bar/add');

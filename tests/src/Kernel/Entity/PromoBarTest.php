@@ -6,14 +6,16 @@ use Drupal\Core\Datetime\DrupalDateTime;
 use Drupal\Tests\commerce_order\Kernel\OrderKernelTestBase;
 use Drupal\commerce_promo_bar\Entity\PromoBar;
 use Drupal\datetime\Plugin\Field\FieldType\DateTimeItemInterface;
+use PHPUnit\Framework\Attributes\CoversClass;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests the PromoBar entity.
- *
- * @coversDefaultClass \Drupal\commerce_promo_bar\Entity\PromoBar
- *
- * @group commerce
  */
+#[CoversClass(PromoBar::class)]
+#[Group('commerce')]
+#[RunTestsInSeparateProcesses]
 class PromoBarTest extends OrderKernelTestBase {
 
   /**
@@ -38,28 +40,7 @@ class PromoBarTest extends OrderKernelTestBase {
   }
 
   /**
-   * @covers ::getName
-   * @covers ::setName
-   * @covers ::getDescription
-   * @covers ::setDescription
-   * @covers ::getCreatedTime
-   * @covers ::setCreatedTime
-   * @covers ::getStores
-   * @covers ::setStores
-   * @covers ::setStoreIds
-   * @covers ::getStoreIds
-   * @covers ::getStartDate
-   * @covers ::setStartDate
-   * @covers ::getEndDate
-   * @covers ::setEndDate
-   * @covers ::getCountdownDate
-   * @covers ::setCountdownDate
-   * @covers ::isEnabled
-   * @covers ::setEnabled
-   * @covers ::getOwner
-   * @covers ::setOwner
-   * @covers ::getOwnerId
-   * @covers ::setOwnerId
+   * Tests the promo bar getters and setters.
    */
   public function testPromoBar() {
     $promo_bar = PromoBar::create([
@@ -120,7 +101,7 @@ class PromoBarTest extends OrderKernelTestBase {
   }
 
   /**
-   * @covers ::createDuplicate
+   * Tests duplicating a promo bar.
    */
   public function testDuplicate() {
     $promo_bar = PromoBar::create([

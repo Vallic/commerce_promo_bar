@@ -4,12 +4,14 @@ namespace Drupal\Tests\commerce_promo_bar\Kernel;
 
 use Drupal\Core\Entity\Entity\EntityFormDisplay;
 use Drupal\Tests\commerce_order\Kernel\OrderKernelTestBase;
+use PHPUnit\Framework\Attributes\Group;
+use PHPUnit\Framework\Attributes\RunTestsInSeparateProcesses;
 
 /**
  * Tests replacing the inline entity form promotion widget.
- *
- * @group commerce_promo_bar
  */
+#[Group('commerce_promo_bar')]
+#[RunTestsInSeparateProcesses]
 class PromotionWidgetUpdateTest extends OrderKernelTestBase {
 
   /**
